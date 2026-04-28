@@ -4,8 +4,8 @@ Class {
 	#instVars : [
 		'numberOfFaces'
 	],
-	#category : 'Dice-Model',
-	#package : 'Dice-Model'
+	#category : 'IngSoft2-Model',
+	#package : 'IngSoft2-Model'
 }
 
 { #category : 'as yet unclassified' }
