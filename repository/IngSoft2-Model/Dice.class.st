@@ -10,8 +10,7 @@ Class {
 
 { #category : 'as yet unclassified' }
 Dice class >> withFaces: aNumberOfFaces [ 
-	(aNumberOfFaces == 0) ifTrue: [Error signal: 'A Dice cannot have zero (0) number of faces.'.].
-	(aNumberOfFaces  < 0) ifTrue: [ Error signal: 'A Dice cannot have a negative (<0) number of faces.'.].
+	(aNumberOfFaces  < 3) ifTrue: [ Error signal: 'A dice cannot have less than three (3) faces.'].
 	^(self new) initializeWithFaces: aNumberOfFaces . 
 ]
 

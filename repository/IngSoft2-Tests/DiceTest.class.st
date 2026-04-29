@@ -38,13 +38,30 @@ self assert: (aDice roll between: 1 and: 6)
 { #category : 'tests' }
 DiceTest >> test004WhenTheNumberOfFacesIsEqualToZeroThenTheDiceIsNotCreated [
 
-
-self should:  [Dice withFaces: 0.] raise: Error withExceptionDo: [ :error | self assert: error messageText equals: 'A Dice cannot have zero (0) number of faces.']
+	self
+		should: [ Dice withFaces: 0 ]
+		raise: Error
+		withExceptionDo: [ :error |
+				self
+					assert: error messageText
+					equals: 'A dice cannot have less than three (3) faces.' ]
 ]
 
 { #category : 'tests' }
 DiceTest >> test005WhenTheNumberOfFacesIsNegativeThenTheDiceIsNotCreated [
 
+	self
+		should: [ Dice withFaces: -8 ]
+		raise: Error
+		withExceptionDo: [ :error |
+				self
+					assert: error messageText
+					equals: 'A dice cannot have less than three (3) faces.' ]
+]
 
-self should:  [Dice withFaces: -8.] raise: Error withExceptionDo: [ :error | self assert: error messageText equals: 'A Dice cannot have a negative (<0) number of faces.']
+{ #category : 'tests' }
+DiceTest >> test006WhenTheDiceHasLessThanThreeFacesThenTheDiceIsNotCreated [ 
+
+
+self should:  [Dice withFaces: 2.] raise: Error withExceptionDo: [ :error | self assert: error messageText equals: 'A dice cannot have less than three (3) faces.']
 ]
