@@ -2,7 +2,8 @@ Class {
 	#name : 'Game',
 	#superclass : 'Object',
 	#instVars : [
-		'positionToReach'
+		'positionToReach',
+		'position'
 	],
 	#category : 'IngSoft2-Model',
 	#package : 'IngSoft2-Model'
@@ -14,24 +15,29 @@ Game class >> reaching: aPositionToReach [
 ]
 
 { #category : 'testing' }
-Game >> hasFinished: aPosition [
-
-	(aPosition >= positionToReach) ifTrue: [^true]. 
-	^false
+Game >> hasFinished: aSpaceship [
+	^(self positionOf: aSpaceship) >= positionToReach
 	 
 ]
 
 { #category : 'initialization' }
 Game >> initializeWithGameGoal: aPositionToReach [ 
-	positionToReach := aPositionToReach 
+	positionToReach := aPositionToReach .
+	position := 0. 
+	
+
 ]
 
 { #category : 'as yet unclassified' }
-Game >> move: aString steps: anInteger [ 
-	self shouldBeImplemented.
+Game >> move: aSpaceship steps: aNumberOfSteps [ 
+	
+	position := (position + aNumberOfSteps) min: positionToReach.
+	
+	
+
 ]
 
 { #category : 'as yet unclassified' }
 Game >> positionOf: aSpaceship [ 
-	^0.
+	^ position. 
 ]
