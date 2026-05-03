@@ -1,12 +1,12 @@
 Class {
-	#name : 'DiceTests',
+	#name : 'DiceTest',
 	#superclass : 'TestCase',
 	#category : 'IngSoft2-Tests',
 	#package : 'IngSoft2-Tests'
 }
 
 { #category : 'tests' }
-DiceTests >> test001WhenTheDiceIsRolledANumberIsReturned [
+DiceTest >> test001WhenTheDiceIsRolledANumberIsReturned [
 
 |aDice |
 
@@ -16,7 +16,7 @@ self assert: (aDice roll isNumber)
 ]
 
 { #category : 'tests' }
-DiceTests >> test002WhenTheDiceIsRolledAPositiveNumberIsReturned [ 
+DiceTest >> test002WhenTheDiceIsRolledAPositiveNumberIsReturned [ 
 
 |aDice |
 
@@ -28,7 +28,7 @@ self assert: (aDice roll strictlyPositive)
 ]
 
 { #category : 'tests' }
-DiceTests >> test003WhenADiceWith6FacesIsRolledThenTheResultIsBetweenOneAndSix [ 
+DiceTest >> test003WhenADiceWith6FacesIsRolledThenTheResultIsBetweenOneAndSix [ 
 
 |aDice |
 
@@ -39,7 +39,7 @@ self assert: (aDice roll between: 1 and: 6)
 ]
 
 { #category : 'tests' }
-DiceTests >> test004WhenTheNumberOfFacesIsEqualToZeroThenTheDiceIsNotCreated [ 
+DiceTest >> test004WhenTheNumberOfFacesIsEqualToZeroThenTheDiceIsNotCreated [ 
 
 	self
 		should: [ Dice withFaces: 0 ]
@@ -51,7 +51,7 @@ DiceTests >> test004WhenTheNumberOfFacesIsEqualToZeroThenTheDiceIsNotCreated [
 ]
 
 { #category : 'tests' }
-DiceTests >> test005WhenTheNumberOfFacesIsNegativeThenTheDiceIsNotCreated [ 
+DiceTest >> test005WhenTheNumberOfFacesIsNegativeThenTheDiceIsNotCreated [ 
 
 	self
 		should: [ Dice withFaces: -8 ]
@@ -64,7 +64,7 @@ DiceTests >> test005WhenTheNumberOfFacesIsNegativeThenTheDiceIsNotCreated [
 ]
 
 { #category : 'tests' }
-DiceTests >> test006WhenTheDiceHasLessThanThreeFacesThenTheDiceIsNotCreated [ 
+DiceTest >> test006WhenTheDiceHasLessThanThreeFacesThenTheDiceIsNotCreated [ 
 
 self should:  [Dice withFaces: 2.] raise: Error withExceptionDo: [ :error | self assert: error messageText equals: 'A dice cannot have less than three (3) faces.']
 

@@ -3,11 +3,8 @@ Class {
 	#superclass : 'Object',
 	#instVars : [
 		'positionToReach',
-		'position',
-		'diceCup',
 		'players',
-		'positions',
-		'aCollectionOfSpaceships'
+		'winner'
 	],
 	#category : 'IngSoft2-Model',
 	#package : 'IngSoft2-Model'
@@ -15,38 +12,24 @@ Class {
 
 { #category : 'as yet unclassified' }
 Game class >> playedBy: aSpaceshipCollection reaching: aGoalPosition [ 
-	^(self new) initializeWithPlayers: aSpaceshipCollection reaching: aGoalPosition 
-]
-
-{ #category : 'as yet unclassified' }
-Game class >> reaching: aPositionToReach [ 
-	^(self new) initializeWithGameGoal: aPositionToReach.  
-]
-
-{ #category : 'as yet unclassified' }
-Game class >> reaching: aPosition with: aDiceCup [ 
-	 ^(self new) initializeWithGameGoal: 10 and: aDiceCup.
-	
-
+	aSpaceshipCollection isEmpty
+		ifTrue: [ Error signal: 'A game must have at least one player.' ].
+	aGoalPosition < 1
+		ifTrue: [ Error signal: 'Board size must be a positive number.' ].
+	^ (self new) initializeWithPlayers: aSpaceshipCollection reaching: aGoalPosition 
 ]
 
 { #category : 'testing' }
-Game >> hasFinished: aSpaceship [
-	^(self positionOf: aSpaceship) >= positionToReach
+Game >> hasFinished [
+	^winner isNil not
 	 
-]
-
-{ #category : 'initialization' }
-Game >> initializeWithGameGoal: aGoalPosition [ 
-	positionToReach := aGoalPosition 
 ]
 
 { #category : 'initialization' }
 Game >> initializeWithPlayers: aSpaceshipCollection reaching: aGoalPosition [ 
 	players := aSpaceshipCollection. 
 	positionToReach := aGoalPosition. 
-	positions := Dictionary new. 
-	aCollectionOfSpaceships do: [ :eachSpaceship | positions at: eachSpaceship put: 0 ]. 
+	winner:=nil.
 	
 	
 	
@@ -55,20 +38,19 @@ Game >> initializeWithPlayers: aSpaceshipCollection reaching: aGoalPosition [
 
 { #category : 'as yet unclassified' }
 Game >> move: aSpaceship steps: aNumberOfSteps [ 
-	
-	position := (position + aNumberOfSteps) min: positionToReach.
-	
-	
-
+	self hasFinished ifTrue: [ Error signal: 'The game has already finished.' ].
+	aSpaceship moves: aNumberOfSteps .
+	(aSpaceship position >= positionToReach and: [ winner isNil ])
+		ifTrue: [ winner := aSpaceship ].
 ]
 
 { #category : 'as yet unclassified' }
-Game >> positionOf: aPlayer [ 
-	^true. 
+Game >> positionOf: aSpaceship [
+	^aSpaceship position.
+	
 ]
 
-{ #category : 'as yet unclassified' }
-Game >> roll: aDiceCup [ 
-	(aDiceCup isEmptyOrNil ) ifTrue: [Error signal: 'The Dice Cup Cannot Be Empty.' ]. 
-	^ aDiceCup sum: [ :aDice | aDice roll].
+{ #category : 'accessing' }
+Game >> winner [
+ ^winner.
 ]
