@@ -23,10 +23,19 @@ Game class >> playedBy: aSpaceshipCollection reaching: aGoalPosition withDiceCup
 	^ (self new) initializeWithPlayers: aSpaceshipCollection reaching: aGoalPosition diceCup: aDiceCup.
 ]
 
+{ #category : 'as yet unclassified' }
+Game >> advanceToNextPlayer [
+    currentPlayerIndex := (currentPlayerIndex \\ players size) + 1.
+]
+
+{ #category : 'as yet unclassified' }
+Game >> currentPlayer [
+    ^ players at: currentPlayerIndex
+]
+
 { #category : 'testing' }
 Game >> hasFinished [
-	^ winner isNil not
-	 
+    ^ winner notNil
 ]
 
 { #category : 'initialization' }
@@ -49,17 +58,13 @@ Game >> move: aSpaceship steps: aNumberOfSteps [
 	
 	aSpaceship moves: aNumberOfSteps.
 	
-	(aSpaceship position >= positionToReach and: [ winner isNil ]) ifTrue: [ winner := aSpaceship ].
+	(aSpaceship hasReached: positionToReach ) ifTrue: [ winner := aSpaceship ].
 ]
 
 { #category : 'as yet unclassified' }
 Game >> playNextTurn [
-	| currentPlayer |
-	self hasFinished ifTrue: [ Error signal: 'The game has already finished.' ].
-	
-	currentPlayer := players at: currentPlayerIndex.
-	self move: currentPlayer steps: diceCup roll.
-	currentPlayerIndex := (currentPlayerIndex \\ players size) + 1.
+	self move: self currentPlayer steps: diceCup roll.
+	self advanceToNextPlayer.
 ]
 
 { #category : 'as yet unclassified' }

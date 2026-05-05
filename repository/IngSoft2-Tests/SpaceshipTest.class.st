@@ -9,7 +9,7 @@ Class {
 SpaceshipTest >> test001WhenASpaceshipIsCreatedThenItsPositionEqualsToZero [
 
     |aShip |
-	aShip:=Spaceship withId: 'Spaceship1'.
+	aShip:=Spaceship new.
     self assert: aShip position equals: 0.
 ]
 
@@ -18,28 +18,28 @@ SpaceshipTest >> test002WhenASpaceshipMovesThenItsPositionChanges [
 
 	| aShip|
 	
-	aShip:=Spaceship withId: 'Space1'.
+	aShip:=Spaceship new.
 	aShip moves: 2.
 	self assert: aShip position equals: 2
 
 ]
 
 { #category : 'tests' }
-SpaceshipTest >> test003WhenASpaceshipIdEqualsTheSentIdThenReturnsTrue [
+SpaceshipTest >> test003WhenASpaceshipReachesAPositionThenHasReachedReturnsTrue [
 
-	| aShip anId|
-	anId:='Spaceship1'.
-	aShip := Spaceship withId: anId .
-	
-	self assert: (aShip matchId: 'Spaceship1')
+    | aShip |
+    aShip := Spaceship new.
+    aShip moves: 5.
+    self assert: (aShip hasReached: 5).
+
 
 ]
 
 { #category : 'tests' }
-SpaceshipTest >> test004WhenASpaceshipIdDoesNotMatchTheSentIdThenReturnsFalse [
- 
-	| aShip |
-	aShip := Spaceship withId: 'Spaceship1'.
-	self deny: (aShip matchId: 'AnotherShip')
+SpaceshipTest >> test004WhenASpaceshipHasNotReachedAPositionThenHasReachedReturnsFalse [
 
+    | aShip |
+    aShip := Spaceship new.
+    aShip moves: 3.
+    self deny: (aShip hasReached: 5).
 ]

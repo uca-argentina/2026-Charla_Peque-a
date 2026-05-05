@@ -10,7 +10,7 @@ GameTest >> test001AGameThatStartsIsNotFinished [
 
 	| aGame aShip aDiceCup |
 	aDiceCup := DiceCup withDices: { Dice withFaces: 6 }.
-	aShip := Spaceship withId: 'Spaceship1'.
+	aShip := Spaceship new.
 	aGame := Game playedBy: { aShip } reaching: 10 withDiceCup: aDiceCup.
 	self deny: aGame hasFinished
 ]
@@ -19,7 +19,7 @@ GameTest >> test001AGameThatStartsIsNotFinished [
 GameTest >> test002AGameEndsWhenTheGoalIsReached [
 
 	| aGame aShip aDiceCup |
-	aShip := Spaceship withId: 'Spaceship1'.
+	aShip := Spaceship new.
 	aDiceCup := DiceCup withDices: { Dice withFaces: 6 }.
 	aGame := Game playedBy: { aShip } reaching: 5 withDiceCup: aDiceCup.
 	aGame move: aShip steps: 5.
@@ -30,7 +30,7 @@ GameTest >> test002AGameEndsWhenTheGoalIsReached [
 GameTest >> test003ANewSpaceshipStartsAtPositionZero [
 
 	| aGame aShip aDiceCup |
-	aShip := Spaceship withId: 'Spaceship1'.
+	aShip := Spaceship new.
 	aDiceCup := DiceCup withDices: { Dice withFaces: 6 }.
 
 	aGame := Game playedBy: { aShip } reaching: 10 withDiceCup: aDiceCup.
@@ -41,7 +41,7 @@ GameTest >> test003ANewSpaceshipStartsAtPositionZero [
 { #category : 'tests' }
 GameTest >> test004APlayerAdvancesInTheCorrectAmount [
 | aGame aShip aDiceCup |
-	aShip := Spaceship withId: 'Spaceship1'.
+	aShip := Spaceship new.
 	aDiceCup := DiceCup withDices: { Dice withFaces: 6 }.
 	aGame := Game playedBy: { aShip } reaching: 20 withDiceCup: aDiceCup.
 	aGame move: aShip steps: 10.
@@ -52,7 +52,7 @@ GameTest >> test004APlayerAdvancesInTheCorrectAmount [
 { #category : 'tests' }
 GameTest >> test005WhenASpaceshipReachesTheGoalThenItWins [
 	| aGame aShip aDiceCup |
-	aShip := Spaceship withId: 'Spaceship1'.
+	aShip := Spaceship new.
 	aDiceCup := DiceCup withDices: { Dice withFaces: 6 }.
 
 	aGame := Game playedBy: { aShip } reaching: 5 withDiceCup: aDiceCup.
@@ -64,7 +64,7 @@ GameTest >> test005WhenASpaceshipReachesTheGoalThenItWins [
 GameTest >> test006WhenTheGameHasFinishedThenNoMoreMovesAreAllowed [
 
 	| aGame aShip aDiceCup |
-	aShip := Spaceship withId: 'Spaceship1'.
+	aShip := Spaceship new.
 	aDiceCup := DiceCup withDices: { Dice withFaces: 6 }.
 
 	aGame := Game playedBy: { aShip } reaching: 5 withDiceCup: aDiceCup.
@@ -93,7 +93,7 @@ GameTest >> test007WhenCreatingAGameWithNoPlayersThenErrorIsRaised [
 GameTest >> test008WhenCreatingAGameWithPositionToReachZeroThenErrorIsRaised [
 
 | aShip aDiceCup |
-	aShip := Spaceship withId: 'Spaceship1'.
+	aShip := Spaceship new.
 	aDiceCup := DiceCup withDices: { Dice withFaces: 6 }.
 	self
 		should: [ Game playedBy: { aShip } reaching: 0 withDiceCup: aDiceCup ]
@@ -108,8 +108,8 @@ GameTest >> test008WhenCreatingAGameWithPositionToReachZeroThenErrorIsRaised [
 GameTest >> test009WhenSpaceshipsAdvancesThenItDoesntAffectOtherSpaceshipsPositions [
 
 	| aShip anotherShip aGame aDiceCup |
-	aShip := Spaceship withId: 'Spaceship1'.
-	anotherShip := Spaceship withId: 'Spaceship2'.
+	aShip := Spaceship new.
+	anotherShip := Spaceship new.
 	aDiceCup := DiceCup withDices: { Dice withFaces: 6 }.
 	
 	aGame := Game playedBy: { aShip. anotherShip } reaching: 10 withDiceCup: aDiceCup.
@@ -124,7 +124,7 @@ GameTest >> test009WhenSpaceshipsAdvancesThenItDoesntAffectOtherSpaceshipsPositi
 GameTest >> test010WhenAGameDoesntHaveADiceCupThenCannotBeCreated [
 
 	| aShip |
-    aShip := Spaceship withId: 'Spaceship1'.
+    aShip := Spaceship new.
     self
         should: [ Game playedBy: { aShip } reaching: 10 withDiceCup: nil ]
         raise: Error
@@ -136,23 +136,23 @@ GameTest >> test010WhenAGameDoesntHaveADiceCupThenCannotBeCreated [
 GameTest >> test011WhenAGamePlayNextTurnThenTheCurrentPlayerMoves [
 
 	| aShip anotherShip aGame aDiceCup |
-	aShip := Spaceship withId: 'Spaceship1'.
-	anotherShip := Spaceship withId: 'Spaceship2'.
+	aShip := Spaceship new.
+	anotherShip := Spaceship new.
 	aDiceCup := DiceCup withDices: { Dice withFaces: 6 }.
 	
 	aGame := Game playedBy: { aShip. anotherShip } reaching: 10 withDiceCup: aDiceCup.
 	
    aGame playNextTurn.
-   self assert: aShip position > 0.
-   self assert: anotherShip position equals: 0.
+   self assert: (aGame positionOf:aShip) > 0.
+   self assert: (aGame  positionOf: anotherShip) equals: 0.
 ]
 
 { #category : 'tests' }
 GameTest >> test012WhenPlayNextTurnIsCalledTwiceTheSecondPlayerMoves [
 
 	| aShip anotherShip aGame aDiceCup |
-	aShip := Spaceship withId: 'Spaceship1'.
-	anotherShip := Spaceship withId: 'Spaceship2'.
+	aShip := Spaceship new.
+	anotherShip := Spaceship new.
 	aDiceCup := DiceCup withDices: { Dice withFaces: 6 }.
 	
 	aGame := Game playedBy: { aShip. anotherShip } reaching: 10 withDiceCup: aDiceCup.
@@ -160,15 +160,41 @@ GameTest >> test012WhenPlayNextTurnIsCalledTwiceTheSecondPlayerMoves [
 	aGame playNextTurn.
 	aGame playNextTurn.
 	
-   self assert: aShip position > 0.
-   self assert: anotherShip position > 0.
+   self assert: (aGame positionOf: aShip ) > 0.
+   self assert: (aGame positionOf: anotherShip ) > 0.
+
+
 ]
 
 { #category : 'tests' }
-GameTest >> test013WhenAPlayerReachesTheBoardSizeDuringATurnTheGameFinishes [
+GameTest >> test013WhenLastPlayerPlaysItsTurnThenNextTurnIsFirstPlayer [
+
+	| aShip anotherShip aGame aDiceCup tempPosition|
+	aShip := Spaceship new.
+	anotherShip := Spaceship new.
+	aDiceCup := DiceCup withDices: { Dice withFaces: 6 }.
+	
+	aGame := Game playedBy: { aShip. anotherShip } reaching: 10 withDiceCup: aDiceCup.
+	
+	aGame playNextTurn.
+	aGame playNextTurn.
+	tempPosition:= aGame positionOf: aShip.
+   self assert: tempPosition > 0.
+   self assert: (aGame positionOf: anotherShip) > 0.
+	
+	aGame playNextTurn.
+	self assert:(aGame positionOf: aShip ) > tempPosition .
+
+	
+
+
+]
+
+{ #category : 'tests' }
+GameTest >> test014WhenAPlayerReachesTheBoardSizeDuringATurnTheGameFinishes [
 
 	| aShip aGame aDiceCup |
-	aShip := Spaceship withId: 'Spaceship1'.
+	aShip := Spaceship new.
 	aDiceCup := DiceCup withDices: { Dice withFaces: 6 }.
 	
 	aGame := Game playedBy: { aShip } reaching: 3 withDiceCup: aDiceCup.
@@ -179,10 +205,10 @@ GameTest >> test013WhenAPlayerReachesTheBoardSizeDuringATurnTheGameFinishes [
 ]
 
 { #category : 'tests' }
-GameTest >> test014WhenTheGameHasFinishedPlayNextTurnRaisesAnError [
+GameTest >> test015WhenTheGameHasFinishedPlayNextTurnRaisesAnError [
 
 	| aShip aGame aDiceCup |
-	aShip := Spaceship withId: 'Spaceship1'.
+	aShip := Spaceship new.
 	aDiceCup := DiceCup withDices: { Dice withFaces: 6 }.
 	
 	aGame := Game playedBy: { aShip } reaching: 3 withDiceCup: aDiceCup.

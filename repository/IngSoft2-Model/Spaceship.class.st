@@ -2,38 +2,20 @@ Class {
 	#name : 'Spaceship',
 	#superclass : 'Object',
 	#instVars : [
-		'position',
-		'id'
+		'position'
 	],
 	#category : 'IngSoft2-Model',
 	#package : 'IngSoft2-Model'
 }
 
-{ #category : 'as yet unclassified' }
-Spaceship class >> withId: anID [ 
-	^(self new) initializeWithId: anID.
-]
-
-{ #category : 'accessing' }
-Spaceship >> id [
-^id.
+{ #category : 'testing' }
+Spaceship >> hasReached: aPosition [ 
+	^ position >= aPosition 
 ]
 
 { #category : 'initialization' }
 Spaceship >> initialize [ 
-
-
-]
-
-{ #category : 'initialization' }
-Spaceship >> initializeWithId: anId [ 
-	id:=anId.
-	position:=0
-]
-
-{ #category : 'as yet unclassified' }
-Spaceship >> matchId: anId [
-	^(anId = id)
+position:=0.
 ]
 
 { #category : 'as yet unclassified' }
