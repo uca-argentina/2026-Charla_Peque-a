@@ -8,20 +8,24 @@ Class {
 { #category : 'tests' }
 GameTest >> test001AGameThatStartsIsNotFinished [
 
-	| aGame aShip aDiceCup |
+	| aGame aShip aDiceCup aBoard |
 	aDiceCup := DiceCup withDice: { (LoadedDice withForcedResult: 6) }.
 	aShip := 'Spaceship 1'.
-	aGame := Game playedBy: { aShip } reaching: 10 withDiceCup: aDiceCup.
+	aBoard := Board withNumberOfTiles: 10.
+	aGame := Game playedBy: { aShip } reachingLaps: 2 withBoard: aBoard andDiceCup: aDiceCup.
 	self deny: aGame hasFinished
+	
+
 ]
 
 { #category : 'tests' }
 GameTest >> test002AGameEndsWhenTheGoalIsReached [
 
-	| aGame aShip aDiceCup |
-	aShip := 'Spaceship 1'.
+	| aGame aShip aDiceCup aBoard |
 	aDiceCup := DiceCup withDice: { (LoadedDice withForcedResult: 6) }.
-	aGame := Game playedBy: { aShip } reaching: 5 withDiceCup: aDiceCup.
+	aShip := 'Spaceship 1'.
+	aBoard := Board withNumberOfTiles: 5.
+	aGame := Game playedBy: { aShip } reachingLaps: 1 withBoard: aBoard andDiceCup: aDiceCup.
 	aGame playNextTurn.
 	self assert: aGame hasFinished
 ]
@@ -225,4 +229,21 @@ GameTest >> test014WhenFirstPlayerPlaysThenSecondPlayerIsTheNextToMove [
 	aGame playNextTurn.
 	self assert: (aGame positionOf: aShip) equals: 6.
 	self assert: (aGame positionOf: anotherShip) equals: 3
+]
+
+{ #category : 'tests' }
+GameTest >> test015WhenASpaceshipCompletesALapThenItRetunsToTheFirstTile [
+
+|aGame aShip aDiceCup aBoard|
+
+	aShip := 'Spaceship 1'.
+	aDiceCup := DiceCup withDice: { (LoadedDice withForcedResult: 11) }.
+	aBoard := Board withNumberOfTiles: 10.
+	aGame := Game playedBy: { aShip } reachingLaps: 2 withBoard: aBoard andDiceCup: aDiceCup.
+	
+	aGame playNextTurn.
+	"Avanza 11 en tablero de 10. Queda en Vuelta 1, Casillero 2"
+	self assert: (aGame lapOf: aShip) equals: 1.
+	self assert: (aGame positionOf: aShip) equals: 2.
+	self deny: aGame hasFinished. 
 ]

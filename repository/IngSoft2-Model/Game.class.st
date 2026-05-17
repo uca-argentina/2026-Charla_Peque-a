@@ -7,23 +7,31 @@ Class {
 		'winner',
 		'diceCup',
 		'currentPlayerIndex',
-		'positions'
+		'positions',
+		'lapsToReach',
+		'board',
+		'laps'
 	],
 	#category : 'IngSoft2-Model',
 	#package : 'IngSoft2-Model'
 }
 
 { #category : 'instance creation' }
-Game class >> playedBy: aSpaceshipCollection reaching: aGoalPosition withDiceCup: aDiceCup [
+Game class >> playedBy: aSpaceshipCollection reachingLaps: aNumberOfLaps withBoard: aBoard andDiceCup: aDiceCup [
 
 	aSpaceshipCollection isEmpty ifTrue: [
 		Error signal: 'A game must have at least one player.' ].
-	aGoalPosition < 1 ifTrue: [
-		Error signal: 'Board size must be a positive number.' ].
+
+	aNumberOfLaps < 1 ifTrue: [
+		Error signal: 'The game must reach at least one lap' ].
+
+	aBoard ifNil: [ Error signal: 'A game must have a board' ].
+
 	aDiceCup ifNil: [ Error signal: 'A game must have a dice cup.' ].
 	^ self new
 		  initializeWithPlayers: aSpaceshipCollection
-		  reaching: aGoalPosition
+		  reachingLaps: aNumberOfLaps
+		  board: aBoard
 		  diceCup: aDiceCup
 ]
 
@@ -46,15 +54,17 @@ Game >> hasFinished [
 ]
 
 { #category : 'initialization' }
-Game >> initializeWithPlayers: aSpaceshipCollection reaching: aGoalPosition diceCup: aDiceCup [
+Game >> initializeWithPlayers: aSpaceshipCollection reachingLaps: aNumberOfLaps board: aBoard diceCup: aDiceCup [
 
 	players := aSpaceshipCollection.
-	positionToReach := aGoalPosition.
+	lapsToReach := aNumberOfLaps .
 	currentPlayerIndex := 1.
 	diceCup := aDiceCup.
 	winner := nil.
 	positions := Dictionary new.
-	players do: [ :aShip | positions at: aShip put: 0 ]
+	laps := Dictionary new. 
+	players do: [ :aShip | positions at: aShip put: (Position at: 1 withLaps: 1)]. 
+	board:= aBoard.
 ]
 
 { #category : 'private' }
@@ -62,14 +72,21 @@ Game >> moveCurrentPlayerByRolling: aNumberOfSteps [
 
 	self hasFinished ifTrue: [
 		Error signal: 'The game has already finished.' ].
+	
 	self movePlayer: self currentPlayer by: aNumberOfSteps
 ]
 
 { #category : 'private' }
 Game >> movePlayer: aSpaceship by: aNumberOfSteps [
 
-	| newPosition |
-	newPosition := (positions at: aSpaceship) + aNumberOfSteps.
+	| newPositionValue newPosition |
+	newPositionValue := (positions at: aSpaceship) + aNumberOfSteps.
+	newPositionValue >= positionToReach ifTrue: [ winner := aSpaceship ]
+
+
+	
+	
+
 	positions at: aSpaceship put: newPosition.
 	newPosition >= positionToReach ifTrue: [ winner := aSpaceship ]
 ]
