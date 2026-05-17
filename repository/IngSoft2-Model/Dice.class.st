@@ -8,7 +8,7 @@ Class {
 	#package : 'IngSoft2-Model'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 Dice class >> withFaces: aNumberOfFaces [
 
 	aNumberOfFaces < 3 ifTrue: [
@@ -17,13 +17,13 @@ Dice class >> withFaces: aNumberOfFaces [
 ]
 
 { #category : 'initialization' }
-Dice >> initializeWithFaces: aNumberOfFaces [ 
-	numberOfFaces := aNumberOfFaces 
-	
+Dice >> initializeWithFaces: aNumberOfFaces [
 
+	numberOfFaces := aNumberOfFaces
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'game logic' }
 Dice >> roll [
-	^ (1 to: numberOfFaces ) atRandom. 
+
+	^ (1 to: numberOfFaces) atRandom
 ]
