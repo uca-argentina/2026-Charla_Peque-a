@@ -11,7 +11,7 @@ Class {
 	#package : 'IngSoft2-Tests'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 LoadedDice class >> withForcedResult: aNumber [
 		aNumber < 0 ifTrue: [ Error signal: 'The forced result cannot be negative '   ].
 		
