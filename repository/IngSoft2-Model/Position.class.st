@@ -31,6 +31,16 @@ Position >> initializeAt: startingPosition withLaps: laps [
 ]
 
 { #category : 'game logic' }
+Position >> laps [
+ ^lap 
+]
+
+{ #category : 'game logic' }
+Position >> tile [
+ ^position 
+]
+
+{ #category : 'game logic' }
 Position >> updatePosition: aNewPosition [
 	position := aNewPosition. 
 	

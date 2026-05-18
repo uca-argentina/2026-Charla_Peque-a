@@ -41,6 +41,11 @@ Game >> advanceToNextPlayer [
 	currentPlayerIndex := currentPlayerIndex \\ players size + 1
 ]
 
+{ #category : 'as yet unclassified' }
+Game >> checkWinner: aSpaceship [
+	(positions at: aSpaceship) laps > lapsToReach ifTrue: [ winner := aSpaceship ].
+]
+
 { #category : 'accessing' }
 Game >> currentPlayer [
 
@@ -62,9 +67,13 @@ Game >> initializeWithPlayers: aSpaceshipCollection reachingLaps: aNumberOfLaps 
 	diceCup := aDiceCup.
 	winner := nil.
 	positions := Dictionary new.
-	laps := Dictionary new. 
 	players do: [ :aShip | positions at: aShip put: (Position at: 1 withLaps: 1)]. 
 	board:= aBoard.
+]
+
+{ #category : 'as yet unclassified' }
+Game >> lapOf: aSpaceship [
+	^(positions at: aSpaceship) laps
 ]
 
 { #category : 'private' }
@@ -78,17 +87,14 @@ Game >> moveCurrentPlayerByRolling: aNumberOfSteps [
 
 { #category : 'private' }
 Game >> movePlayer: aSpaceship by: aNumberOfSteps [
-
-	| newPositionValue newPosition |
-	newPositionValue := (positions at: aSpaceship) + aNumberOfSteps.
-	newPositionValue >= positionToReach ifTrue: [ winner := aSpaceship ]
-
+	|aPosition newPosition  |
+	aPosition :=(positions at: aSpaceship ).
+	newPosition:= board fromPosition: aPosition advancing: aNumberOfSteps.
+	positions at: aSpaceship  put: newPosition.
+	self checkWinner: aSpaceship .
 
 	
-	
 
-	positions at: aSpaceship put: newPosition.
-	newPosition >= positionToReach ifTrue: [ winner := aSpaceship ]
 ]
 
 { #category : 'game logic' }
@@ -101,7 +107,7 @@ Game >> playNextTurn [
 { #category : 'accessing' }
 Game >> positionOf: aSpaceship [
 
-	^ positions at: aSpaceship
+	^ (positions at: aSpaceship) tile
 ]
 
 { #category : 'accessing' }
