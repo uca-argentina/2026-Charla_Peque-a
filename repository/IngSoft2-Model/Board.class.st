@@ -8,7 +8,7 @@ Class {
 	#package : 'IngSoft2-Model'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 Board class >> withTiles: aTileCollection [
 
 	aTileCollection isEmpty ifTrue: [
@@ -19,18 +19,12 @@ Board class >> withTiles: aTileCollection [
 
 ]
 
-{ #category : 'accessing' }
-Board >> TileAt: aTileIndex [
-
-	^ tiles at: aTileIndex
-]
-
 { #category : 'instance creation' }
 Board >> applyEffectFor: aSpaceship on: aGame [
 
 	| position tile |
-	position := (aGame positionOf: aSpaceship).
-	tile := tiles at: position .
+	position := aGame positionOf: aSpaceship.
+	tile := tiles at: position.
 	tile applyOn: aGame
 ]
 
@@ -65,4 +59,10 @@ Board >> initializeWithTiles: aTileCollection [
 Board >> numberOfTiles [
 
 	^ tiles size
+]
+
+{ #category : 'accessing' }
+Board >> tileAt: aTileIndex [
+
+	^ tiles at: aTileIndex
 ]

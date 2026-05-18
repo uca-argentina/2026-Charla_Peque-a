@@ -84,7 +84,7 @@ Game >> moveAllSpaceshipsExceptCurrentBy: aNumberOfSteps [
 	No dispara nuevos efectos."
 	players do: [ :each |
 		(each = (self currentPlayer)) ifFalse: [
-			self moveSpaceshipBy: aNumberOfSteps ] ]
+			self moveSpaceship: each by: aNumberOfSteps ] ]
 ]
 
 { #category : 'game logic' }
@@ -93,22 +93,22 @@ Game >> moveCurrentPlayerByRolling: aNumberOfSteps [
 	self hasFinished ifTrue: [
 		Error signal: 'The game has already finished.' ].
 
-	self moveSpaceshipBy: aNumberOfSteps.
+	self moveSpaceship: self currentPlayer by: aNumberOfSteps.
+
 	self hasFinished ifFalse: [
 		board applyEffectFor: self currentPlayer on: self ]
-
-
 ]
 
 { #category : 'game logic' }
-Game >> moveSpaceshipBy: aNumberOfSteps [
+Game >> moveSpaceship: aSpaceship by: aNumberOfSteps [
 	"Mensaje invocado por los efectos para mover una nave.
 	No dispara nuevos efectos (efectos encadenados no aplican)."
 
-	| aPosition newPosition aSpaceship|
-	aSpaceship:=self currentPlayer.
-	aPosition := positions at: aSpaceship .
-	newPosition := board fromPosition: aPosition advancing: aNumberOfSteps.
+	| aPosition newPosition |
+	aPosition := positions at: aSpaceship.
+	newPosition := board
+		               fromPosition: aPosition
+		               advancing: aNumberOfSteps.
 	positions at: aSpaceship put: newPosition.
 	self checkWinner: aSpaceship
 ]

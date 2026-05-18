@@ -87,3 +87,169 @@ EffectsTest >> test003WhenAShipLandsOnMoonWalkThenAllOtherShipsRetreatNTiles [
 	self assert: (aGame positionOf: secondShip) equals: 1.
 	self assert: (aGame lapOf: secondShip) equals: 1
 ]
+
+{ #category : 'tests - MoonWalk' }
+EffectsTest >> test004MoonWalkDoesNotAffectTheShipThatLandedOnIt [
+
+	| firstShip secondShip aDiceCup aBoard aGame |
+	firstShip := 'Spaceship 1'.
+	secondShip := 'Spaceship 2'.
+	aDiceCup := DiceCup withDice: { (LoadedDice withForcedResult: 5) }.
+	aBoard := Board withTiles: {
+			          NoEffect new.
+			          NoEffect new.
+			          NoEffect new.
+			          NoEffect new.
+			          NoEffect new.
+			          (MoonWalk withTilesBack: 2).
+			          NoEffect new.
+			          NoEffect new.
+			          NoEffect new.
+			          NoEffect new }.
+	aGame := Game
+		         playedBy: {
+				         firstShip.
+				         secondShip }
+		         reachingLaps: 2
+		         withBoard: aBoard
+		         andDiceCup: aDiceCup.
+
+	aGame playNextTurn.
+	"firstShip cae en MoonWalk pero NO se mueve a sí misma"
+	self assert: (aGame positionOf: firstShip) equals: 6
+]
+
+{ #category : 'tests - MoonWalk' }
+EffectsTest >> test005MoonWalkCannotBeCreatedWithLessThanOneTileBack [
+
+	self
+		should: [ MoonWalk withTilesBack: 0 ]
+		raise: Error
+		withExceptionDo: [ :error |
+				self
+					assert: error messageText
+					equals: 'MoonWalk must move at least one tile back.' ]
+]
+
+{ #category : 'tests - AtomicBomb' }
+EffectsTest >> test006WhenAShipLandsOnAtomicBombThenAllShipsReturnToFirstTile [
+
+	| firstShip secondShip aDiceCup aBoard aGame |
+	firstShip := 'Spaceship 1'.
+	secondShip := 'Spaceship 2'.
+	aDiceCup := DiceCup withDice: { (LoadedDice withForcedResult: 5) }.
+	"Tablero de 10. AtomicBomb en posición 6."
+	aBoard := Board withTiles: {
+			          NoEffect new.
+			          NoEffect new.
+			          NoEffect new.
+			          NoEffect new.
+			          NoEffect new.
+			          AtomicBomb new.
+			          NoEffect new.
+			          NoEffect new.
+			          NoEffect new.
+			          NoEffect new }.
+	aGame := Game
+		         playedBy: {
+				         firstShip.
+				         secondShip }
+		         reachingLaps: 2
+		         withBoard: aBoard
+		         andDiceCup: aDiceCup.
+
+	"firstShip tira 5, va de 1 a 6 (AtomicBomb). Todos al primer casillero."
+	aGame playNextTurn.
+	self assert: (aGame positionOf: firstShip) equals: 1.
+	self assert: (aGame positionOf: secondShip) equals: 1
+]
+
+{ #category : 'tests - AtomicBomb' }
+EffectsTest >> test007AtomicBombKeepsTheLapCountOfEachShip [
+
+	| firstShip secondShip aDiceCup aBoard aGame |
+	firstShip := 'Spaceship 1'.
+	secondShip := 'Spaceship 2'.
+	aDiceCup := DiceCup withDice: { (LoadedDice withForcedResult: 5) }.
+	"Tablero de 5. AtomicBomb en posición 1."
+	aBoard := Board withTiles: {
+			          AtomicBomb new.
+			          NoEffect new.
+			          NoEffect new.
+			          NoEffect new.
+			          NoEffect new }.
+	aGame := Game
+		         playedBy: {
+				         firstShip.
+				         secondShip }
+		         reachingLaps: 3
+		         withBoard: aBoard
+		         andDiceCup: aDiceCup.
+
+	aGame playNextTurn.
+	self assert: (aGame positionOf: firstShip) equals: 1.
+	self assert: (aGame lapOf: firstShip) equals: 2.
+	self assert: (aGame positionOf: secondShip) equals: 1.
+	self assert: (aGame lapOf: secondShip) equals: 1
+]
+
+{ #category : 'tests - no chained effect' }
+EffectsTest >> test008WhenAnEffectMovesAShipToAnotherEffectThenTheSecondEffectIsNotApplied [
+
+	| aShip aDiceCup aBoard aGame |
+	aShip := 'Spaceship 1'.
+	aDiceCup := DiceCup withDice: { (LoadedDice withForcedResult: 4) }.
+
+	aBoard := Board withTiles: {
+			          NoEffect new.
+			          NoEffect new.
+			          NoEffect new.
+			          NoEffect new.
+			          SpeedUp new.
+			          NoEffect new.
+			          NoEffect new.
+			          NoEffect new.
+			          WormHole new.
+			          NoEffect new }.
+	aGame := Game
+		         playedBy: { aShip }
+		         reachingLaps: 2
+		         withBoard: aBoard
+		         andDiceCup: aDiceCup.
+
+	aGame playNextTurn.
+	self assert: (aGame positionOf: aShip) equals: 9
+]
+
+{ #category : 'tests - no chained effect' }
+EffectsTest >> test009MoonWalkPushingShipToSpeedUpDoesNotTriggerSpeedUp [
+
+	| firstShip secondShip aDiceCup aBoard aGame |
+	firstShip := 'Spaceship 1'.
+	secondShip := 'Spaceship 2'.
+	aDiceCup := DiceCup withDice: { (LoadedDice withForcedResult: 7) }.
+
+	aBoard := Board withTiles: {
+			          NoEffect new.
+			          NoEffect new.
+			          SpeedUp new.
+			          NoEffect new.
+			          NoEffect new.
+			          NoEffect new.
+			          NoEffect new.
+			          (MoonWalk withTilesBack: 5).
+			          NoEffect new.
+			          NoEffect new }.
+	aGame := Game
+		         playedBy: {
+				         firstShip.
+				         secondShip }
+		         reachingLaps: 2
+		         withBoard: aBoard
+		         andDiceCup: aDiceCup.
+
+	aGame playNextTurn.
+	aGame playNextTurn.
+	self assert: (aGame positionOf: firstShip) equals: 3.
+	self assert: (aGame positionOf: secondShip) equals: 8
+]

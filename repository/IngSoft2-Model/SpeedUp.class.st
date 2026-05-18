@@ -8,5 +8,5 @@ Class {
 { #category : 'applying' }
 SpeedUp >> applyOn: aGame [ 
 
-	aGame moveSpaceshipBy: 4
+	aGame moveSpaceship: aGame currentPlayer by: 4.
 ]

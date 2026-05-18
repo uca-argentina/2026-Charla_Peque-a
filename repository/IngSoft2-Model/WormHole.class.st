@@ -6,7 +6,7 @@ Class {
 }
 
 { #category : 'applying' }
-WormHole >> applyOn: aGame [ 
+WormHole >> applyOn: aGame [
 
-	aGame moveSpaceshipBy: -4
+	aGame moveSpaceship: aGame currentPlayer by: -4
 ]
