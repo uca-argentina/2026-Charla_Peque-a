@@ -1,6 +1,13 @@
 Class {
 	#name : 'NoEffect',
-	#superclass : 'Object',
+	#superclass : 'Tile',
 	#category : 'IngSoft2-Model',
 	#package : 'IngSoft2-Model'
 }
+
+{ #category : 'applying' }
+NoEffect >> applyOn: aGame [
+
+	"This cell has no effect, so it does nothing."
+	^ self
+]
