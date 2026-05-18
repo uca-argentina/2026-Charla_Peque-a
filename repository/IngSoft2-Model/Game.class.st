@@ -78,23 +78,37 @@ Game >> lapOf: aSpaceship [
 	^ (positions at: aSpaceship) laps
 ]
 
-{ #category : 'private' }
+{ #category : 'game logic' }
+Game >> moveAllSpaceshipsExceptCurrentBy: aNumberOfSteps [
+	"Mensaje invocado por los efectos para mover a todas las naves excepto una.
+	No dispara nuevos efectos."
+	players do: [ :each |
+		(each = (self currentPlayer)) ifFalse: [
+			self moveSpaceshipBy: aNumberOfSteps ] ]
+]
+
+{ #category : 'game logic' }
 Game >> moveCurrentPlayerByRolling: aNumberOfSteps [
 
 	self hasFinished ifTrue: [
 		Error signal: 'The game has already finished.' ].
-	
-	self movePlayer: self currentPlayer by: aNumberOfSteps
+
+	self moveSpaceshipBy: aNumberOfSteps.
+	self hasFinished ifFalse: [
+		board applyEffectFor: self currentPlayer on: self ]
+
+
 ]
 
-{ #category : 'private' }
-Game >> movePlayer: aSpaceship by: aNumberOfSteps [
+{ #category : 'game logic' }
+Game >> moveSpaceshipBy: aNumberOfSteps [
+	"Mensaje invocado por los efectos para mover una nave.
+	No dispara nuevos efectos (efectos encadenados no aplican)."
 
-	| aPosition newPosition |
-	aPosition := positions at: aSpaceship.
-	newPosition := board
-		               fromPosition: aPosition
-		               advancing: aNumberOfSteps.
+	| aPosition newPosition aSpaceship|
+	aSpaceship:=self currentPlayer.
+	aPosition := positions at: aSpaceship .
+	newPosition := board fromPosition: aPosition advancing: aNumberOfSteps.
 	positions at: aSpaceship put: newPosition.
 	self checkWinner: aSpaceship
 ]
@@ -122,6 +136,19 @@ Game >> ranking [
 		
 		posA laps > posB laps or: [
 			posA laps = posB laps and: [ posA tile > posB tile ] ] ].
+]
+
+{ #category : 'game logic' }
+Game >> sendAllSpaceshipsToFirstTile [
+	"Mensaje invocado por los efectos para resetear a todas las naves al primer
+	casillero, manteniendo la vuelta actual de cada una."
+
+	players do: [ :each |
+		| currentLaps |
+		currentLaps := (positions at: each) laps.
+		positions at: each put: (Position at: 1 withLaps: currentLaps) ]
+
+
 ]
 
 { #category : 'accessing' }
