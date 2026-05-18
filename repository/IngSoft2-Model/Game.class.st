@@ -6,7 +6,6 @@ Class {
 		'winner',
 		'diceCup',
 		'currentPlayerIndex',
-		'positions',
 		'lapsToReach',
 		'board'
 	],
@@ -19,12 +18,9 @@ Game class >> playedBy: aSpaceshipCollection reachingLaps: aNumberOfLaps withBoa
 
 	aSpaceshipCollection isEmpty ifTrue: [
 		Error signal: 'A game must have at least one player.' ].
-
 	aNumberOfLaps < 1 ifTrue: [
 		Error signal: 'The game must reach at least one lap' ].
-
 	aBoard ifNil: [ Error signal: 'A game must have a board' ].
-
 	aDiceCup ifNil: [ Error signal: 'A game must have a dice cup.' ].
 	^ self new
 		  initializeWithPlayers: aSpaceshipCollection
@@ -42,8 +38,7 @@ Game >> advanceToNextPlayer [
 { #category : 'private' }
 Game >> checkWinner: aSpaceship [
 
-	(positions at: aSpaceship) laps > lapsToReach ifTrue: [
-		winner := aSpaceship ]
+	aSpaceship laps > lapsToReach ifTrue: [ winner := aSpaceship ]
 ]
 
 { #category : 'accessing' }
@@ -66,16 +61,14 @@ Game >> initializeWithPlayers: aSpaceshipCollection reachingLaps: aNumberOfLaps 
 	currentPlayerIndex := 1.
 	diceCup := aDiceCup.
 	winner := nil.
-	positions := Dictionary new.
-	players do: [ :aShip |
-		positions at: aShip put: (Position at: 1 withLaps: 1) ].
-	board := aBoard.
+	players do: [ :aShip | aShip position: (Position at: 1 withLaps: 1) ].
+	board := aBoard
 ]
 
 { #category : 'accessing' }
 Game >> lapOf: aSpaceship [
 
-	^ (positions at: aSpaceship) laps
+	^ aSpaceship laps
 ]
 
 { #category : 'private' }
@@ -83,19 +76,16 @@ Game >> moveCurrentPlayerByRolling: aNumberOfSteps [
 
 	self hasFinished ifTrue: [
 		Error signal: 'The game has already finished.' ].
-	
 	self movePlayer: self currentPlayer by: aNumberOfSteps
 ]
 
 { #category : 'private' }
 Game >> movePlayer: aSpaceship by: aNumberOfSteps [
 
-	| aPosition newPosition |
-	aPosition := positions at: aSpaceship.
-	newPosition := board
-		               fromPosition: aPosition
-		               advancing: aNumberOfSteps.
-	positions at: aSpaceship put: newPosition.
+	board
+		moveSpaceship: aSpaceship
+		players: players
+		advancing: aNumberOfSteps.
 	self checkWinner: aSpaceship
 ]
 
@@ -109,19 +99,19 @@ Game >> playNextTurn [
 { #category : 'accessing' }
 Game >> positionOf: aSpaceship [
 
-	^ (positions at: aSpaceship) tile
+	^ aSpaceship tile
 ]
 
 { #category : 'game logic' }
 Game >> ranking [
 	"Devuelve una colección de naves ordenadas desde la primera hasta la última."
+
 	^ players sorted: [ :shipA :shipB |
-		| posA posB |
-		posA := positions at: shipA.
-		posB := positions at: shipB.
-		
-		posA laps > posB laps or: [
-			posA laps = posB laps and: [ posA tile > posB tile ] ] ].
+			  | posA posB |
+			  posA := shipA position.
+			  posB := shipB position.
+			  posA laps > posB laps or: [
+				  posA laps = posB laps and: [ posA tile > posB tile ] ] ]
 ]
 
 { #category : 'accessing' }
