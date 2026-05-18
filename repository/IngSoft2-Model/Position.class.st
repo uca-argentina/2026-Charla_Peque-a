@@ -20,28 +20,31 @@ Position class >> at: aStartingPosition withLaps: aNumberOfLaps [
 
 { #category : 'game logic' }
 Position >> addLap [
-	lap := lap + 1
+
+	lap := lap + 1.
 ]
 
 { #category : 'initialization' }
 Position >> initializeAt: startingPosition withLaps: laps [
 
-	position := startingPosition .
-	lap := laps. 
+	position := startingPosition.
+	lap := laps.
 ]
 
 { #category : 'game logic' }
 Position >> laps [
- ^lap 
+
+	^ lap
 ]
 
 { #category : 'game logic' }
 Position >> tile [
- ^position 
+
+	^ position
 ]
 
 { #category : 'game logic' }
 Position >> updatePosition: aNewPosition [
-	position := aNewPosition. 
-	
+
+	position := aNewPosition
 ]

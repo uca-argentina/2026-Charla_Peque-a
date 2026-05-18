@@ -12,10 +12,12 @@ GameTest >> test001AGameThatStartsIsNotFinished [
 	aDiceCup := DiceCup withDice: { (LoadedDice withForcedResult: 6) }.
 	aShip := 'Spaceship 1'.
 	aBoard := Board withNumberOfTiles: 10.
-	aGame := Game playedBy: { aShip } reachingLaps: 2 withBoard: aBoard andDiceCup: aDiceCup.
+	aGame := Game
+		         playedBy: { aShip }
+		         reachingLaps: 2
+		         withBoard: aBoard
+		         andDiceCup: aDiceCup.
 	self deny: aGame hasFinished
-	
-
 ]
 
 { #category : 'tests' }
@@ -25,7 +27,11 @@ GameTest >> test002AGameEndsWhenTheGoalIsReached [
 	aDiceCup := DiceCup withDice: { (LoadedDice withForcedResult: 6) }.
 	aShip := 'Spaceship 1'.
 	aBoard := Board withNumberOfTiles: 5.
-	aGame := Game playedBy: { aShip } reachingLaps: 1 withBoard: aBoard andDiceCup: aDiceCup.
+	aGame := Game
+		         playedBy: { aShip }
+		         reachingLaps: 1
+		         withBoard: aBoard
+		         andDiceCup: aDiceCup.
 	aGame playNextTurn.
 	self assert: aGame hasFinished
 ]
@@ -37,7 +43,11 @@ GameTest >> test003ANewSpaceshipStartsAtPositionOne [
 	aDiceCup := DiceCup withDice: { (LoadedDice withForcedResult: 6) }.
 	aShip := 'Spaceship 1'.
 	aBoard := Board withNumberOfTiles: 5.
-	aGame := Game playedBy: { aShip } reachingLaps: 1 withBoard: aBoard andDiceCup: aDiceCup.
+	aGame := Game
+		         playedBy: { aShip }
+		         reachingLaps: 1
+		         withBoard: aBoard
+		         andDiceCup: aDiceCup.
 	self assert: (aGame positionOf: aShip) equals: 1
 ]
 
@@ -48,7 +58,11 @@ GameTest >> test004APlayerAdvancesInTheCorrectAmountWhenPlayingItsTurn [
 	aDiceCup := DiceCup withDice: { (LoadedDice withForcedResult: 6) }.
 	aShip := 'Spaceship 1'.
 	aBoard := Board withNumberOfTiles: 10.
-	aGame := Game playedBy: { aShip } reachingLaps: 2 withBoard: aBoard andDiceCup: aDiceCup.
+	aGame := Game
+		         playedBy: { aShip }
+		         reachingLaps: 2
+		         withBoard: aBoard
+		         andDiceCup: aDiceCup.
 	aGame playNextTurn.
 	self assert: (aGame positionOf: aShip) equals: 7
 ]
@@ -60,7 +74,11 @@ GameTest >> test005WhenASpaceshipReachesTheGoalThenItWins [
 	aDiceCup := DiceCup withDice: { (LoadedDice withForcedResult: 6) }.
 	aShip := 'Spaceship 1'.
 	aBoard := Board withNumberOfTiles: 5.
-	aGame := Game playedBy: { aShip } reachingLaps: 1 withBoard: aBoard andDiceCup: aDiceCup.
+	aGame := Game
+		         playedBy: { aShip }
+		         reachingLaps: 1
+		         withBoard: aBoard
+		         andDiceCup: aDiceCup.
 	aGame playNextTurn.
 	self assert: aGame winner equals: aShip
 ]
@@ -72,7 +90,11 @@ GameTest >> test006WhenTheGameHasFinishedPlayNextTurnRaisesAnError [
 	aDiceCup := DiceCup withDice: { (LoadedDice withForcedResult: 6) }.
 	aShip := 'Spaceship 1'.
 	aBoard := Board withNumberOfTiles: 5.
-	aGame := Game playedBy: { aShip } reachingLaps: 1 withBoard: aBoard andDiceCup: aDiceCup.
+	aGame := Game
+		         playedBy: { aShip }
+		         reachingLaps: 1
+		         withBoard: aBoard
+		         andDiceCup: aDiceCup.
 	aGame playNextTurn.
 	self
 		should: [ aGame playNextTurn ]
@@ -86,11 +108,16 @@ GameTest >> test006WhenTheGameHasFinishedPlayNextTurnRaisesAnError [
 { #category : 'tests' }
 GameTest >> test007WhenCreatingAGameWithNoPlayersThenErrorIsRaised [
 
-	| aDiceCup aBoard|
+	| aDiceCup aBoard |
 	aDiceCup := DiceCup withDice: { (LoadedDice withForcedResult: 6) }.
 	aBoard := Board withNumberOfTiles: 10.
 	self
-		should: [ Game playedBy: {  } reachingLaps: 2 withBoard:aBoard andDiceCup: aDiceCup ]
+		should: [
+				Game
+					playedBy: {  }
+					reachingLaps: 2
+					withBoard: aBoard
+					andDiceCup: aDiceCup ]
 		raise: Error
 		withExceptionDo: [ :error |
 				self
@@ -101,13 +128,17 @@ GameTest >> test007WhenCreatingAGameWithNoPlayersThenErrorIsRaised [
 { #category : 'tests' }
 GameTest >> test008WhenCreatingAGameWithLapsToReachZeroThenErrorIsRaised [
 
-	| aShip aDiceCup aBoard|
+	| aShip aDiceCup aBoard |
 	aShip := 'Spaceship 1'.
-	aBoard:= Board withNumberOfTiles: 20.
+	aBoard := Board withNumberOfTiles: 20.
 	aDiceCup := DiceCup withDice: { (LoadedDice withForcedResult: 6) }.
 	self
 		should: [
-		Game playedBy: { aShip } reachingLaps: 0 withBoard: aBoard andDiceCup: aDiceCup ]
+				Game
+					playedBy: { aShip }
+					reachingLaps: 0
+					withBoard: aBoard
+					andDiceCup: aDiceCup ]
 		raise: Error
 		withExceptionDo: [ :error |
 				self
@@ -118,17 +149,17 @@ GameTest >> test008WhenCreatingAGameWithLapsToReachZeroThenErrorIsRaised [
 { #category : 'tests' }
 GameTest >> test009WhenSpaceshipsAdvancesThenItDoesntAffectOtherSpaceshipsPositions [
 
-	| aShip anotherShip aGame aDiceCup aBoard|
+	| aShip anotherShip aGame aDiceCup aBoard |
 	aShip := 'Spaceship 1'.
 	anotherShip := 'Spaceship 2'.
 	aDiceCup := DiceCup withDice: { (LoadedDice withForcedResult: 6) }.
-	aBoard:= Board withNumberOfTiles: 15.
+	aBoard := Board withNumberOfTiles: 15.
 	aGame := Game
 		         playedBy: {
 				         aShip.
 				         anotherShip }
 		         reachingLaps: 2
-					withBoard: aBoard
+		         withBoard: aBoard
 		         andDiceCup: aDiceCup.
 	aGame playNextTurn.
 	self assert: (aGame positionOf: aShip) equals: 7.
@@ -138,11 +169,16 @@ GameTest >> test009WhenSpaceshipsAdvancesThenItDoesntAffectOtherSpaceshipsPositi
 { #category : 'tests' }
 GameTest >> test010WhenAGameDoesntHaveADiceCupThenCannotBeCreated [
 
-	| aShip aBoard|
+	| aShip aBoard |
 	aShip := 'Spaceship 1'.
 	aBoard := Board withNumberOfTiles: 10.
 	self
-		should: [ Game playedBy: { aShip } reachingLaps: 10 withBoard:aBoard andDiceCup: nil ]
+		should: [
+				Game
+					playedBy: { aShip }
+					reachingLaps: 10
+					withBoard: aBoard
+					andDiceCup: nil ]
 		raise: Error
 		withExceptionDo: [ :error |
 			self
@@ -157,14 +193,14 @@ GameTest >> test011WhenPlayNextTurnIsCalledTwiceTheSecondPlayerMoves [
 	aShip := 'Spaceship 1'.
 	anotherShip := 'Spaceship 2'.
 	aDiceCup := DiceCup withDice: { (LoadedDice withForcedResult: 6) }.
-	aBoard:= Board withNumberOfTiles: 15.
+	aBoard := Board withNumberOfTiles: 15.
 
 	aGame := Game
 		         playedBy: {
 				         aShip.
 				         anotherShip }
 		         reachingLaps: 2
-					withBoard:aBoard
+		         withBoard: aBoard
 		         andDiceCup: aDiceCup.
 
 	aGame playNextTurn.
@@ -181,13 +217,13 @@ GameTest >> test012WhenAllThePlayersPlayedTheirTurnThenTheFirstPlayerPlaysAgain 
 	aShip := 'Spaceship 1'.
 	anotherShip := 'Spaceship 2'.
 	aDiceCup := DiceCup withDice: { (LoadedDice withForcedResult: 6) }.
-	aBoard:= Board withNumberOfTiles: 20.
+	aBoard := Board withNumberOfTiles: 20.
 	aGame := Game
 		         playedBy: {
 				         aShip.
 				         anotherShip }
 		         reachingLaps: 2
-					withBoard: aBoard
+		         withBoard: aBoard
 		         andDiceCup: aDiceCup.
 
 	aGame playNextTurn.
@@ -206,9 +242,13 @@ GameTest >> test013WhenAPlayerReachesTheAmountOfTilesThenTheHeAdvancesToTheFollo
 	| aShip aGame aDiceCup aBoard |
 	aShip := 'Spaceship 1'.
 	aDiceCup := DiceCup withDice: { (LoadedDice withForcedResult: 6) }.
-	aBoard:= Board withNumberOfTiles: 5.
+	aBoard := Board withNumberOfTiles: 5.
 
-	aGame := Game playedBy: { aShip } reachingLaps: 2 withBoard:aBoard andDiceCup: aDiceCup.
+	aGame := Game
+		         playedBy: { aShip }
+		         reachingLaps: 2
+		         withBoard: aBoard
+		         andDiceCup: aDiceCup.
 
 	aGame playNextTurn.
 	self assert: (aGame lapOf: aShip) equals: 2
@@ -221,13 +261,13 @@ GameTest >> test014WhenFirstPlayerPlaysThenSecondPlayerIsTheNextToMove [
 	aShip := 'Spaceship 1'.
 	anotherShip := 'Spaceship 2'.
 	aDiceCup := DiceCup withDice: { (LoadedDice withForcedResult: 3) }.
-	aBoard:= Board withNumberOfTiles: 10.
+	aBoard := Board withNumberOfTiles: 10.
 	aGame := Game
 		         playedBy: {
 				         aShip.
 				         anotherShip }
 		         reachingLaps: 2
-					withBoard: aBoard
+		         withBoard: aBoard
 		         andDiceCup: aDiceCup.
 
 	aGame playNextTurn.
@@ -246,16 +286,41 @@ GameTest >> test014WhenFirstPlayerPlaysThenSecondPlayerIsTheNextToMove [
 { #category : 'tests' }
 GameTest >> test015WhenASpaceshipCompletesALapThenItRetunsToTheFirstTile [
 
-|aGame aShip aDiceCup aBoard|
-
+	| aGame aShip aDiceCup aBoard |
 	aShip := 'Spaceship 1'.
 	aDiceCup := DiceCup withDice: { (LoadedDice withForcedResult: 11) }.
 	aBoard := Board withNumberOfTiles: 10.
-	aGame := Game playedBy: { aShip } reachingLaps: 2 withBoard: aBoard andDiceCup: aDiceCup.
-	
+	aGame := Game
+		         playedBy: { aShip }
+		         reachingLaps: 2
+		         withBoard: aBoard
+		         andDiceCup: aDiceCup.
+
 	aGame playNextTurn.
 	"Avanza 11 en tablero de 10. Queda en Vuelta 1, Casillero 2"
 	self assert: (aGame lapOf: aShip) equals: 2.
 	self assert: (aGame positionOf: aShip) equals: 2.
-	self deny: aGame hasFinished. 
+	self deny: aGame hasFinished
+]
+
+{ #category : 'tests' }
+GameTest >> test016WhenAShipIsMoreAdvancedThanOtherShipThenItIsHigherInTheRanking [
+
+	| aGame aDiceCup aBoard firstShip secondShip ranking |
+	firstShip := 'Spaceship 1'.
+	secondShip := 'Spaceship 2'.
+	aDiceCup := DiceCup withDice: { (LoadedDice withForcedResult: 11) }.
+	aBoard := Board withNumberOfTiles: 10.
+	aGame := Game
+		         playedBy: { secondShip. firstShip }
+		         reachingLaps: 2
+		         withBoard: aBoard
+		         andDiceCup: aDiceCup.
+
+	aGame playNextTurn.
+	aGame playNextTurn.
+	aGame playNextTurn.
+	ranking := aGame ranking.
+	self assert: (ranking first) equals: secondShip.
+	self assert: (ranking last) equals: firstShip.
 ]
