@@ -27,3 +27,9 @@ MoonWalk >> initializeWithTilesBack: aNumberOfTiles [
 
 	tilesBack := aNumberOfTiles
 ]
+
+{ #category : 'accessing' }
+MoonWalk >> tilesBack [
+
+	^ tilesBack
+]
