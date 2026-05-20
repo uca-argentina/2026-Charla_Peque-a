@@ -32,6 +32,24 @@ Position >> laps [
 ]
 
 { #category : 'game logic' }
+Position >> moveBy: aNumberOfSteps on: aBoard [
+
+	| indexedTile newLaps newTile |
+	indexedTile := position - 1 + aNumberOfSteps.
+	newLaps := lap + (indexedTile // aBoard numberOfTiles).
+	newTile := indexedTile \\ aBoard numberOfTiles + 1.
+
+	newLaps < 1 ifTrue: [ ^ self class at: 1 withLaps: 1 ].
+
+	^ self class at: newTile withLaps: newLaps
+]
+
+{ #category : 'initialization' }
+Position >> resetToFirstTile [
+    ^ self class at: 1 withLaps: lap
+]
+
+{ #category : 'game logic' }
 Position >> tile [
 
 	^ position

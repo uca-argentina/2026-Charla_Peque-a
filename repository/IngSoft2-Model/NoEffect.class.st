@@ -8,6 +8,5 @@ Class {
 { #category : 'applying' }
 NoEffect >> applyOn: aGame [
 
-	"This cell has no effect, so it does nothing."
 	^ self
 ]

@@ -101,14 +101,10 @@ Game >> moveCurrentPlayerByRolling: aNumberOfSteps [
 
 { #category : 'game logic' }
 Game >> moveSpaceship: aSpaceship by: aNumberOfSteps [
-	"Mensaje invocado por los efectos para mover una nave.
-	No dispara nuevos efectos (efectos encadenados no aplican)."
 
-	| aPosition newPosition |
-	aPosition := positions at: aSpaceship.
-	newPosition := board
-		               fromPosition: aPosition
-		               advancing: aNumberOfSteps.
+	| currentPosition newPosition |
+	currentPosition := positions at: aSpaceship.
+	newPosition := currentPosition moveBy: aNumberOfSteps on: board.
 	positions at: aSpaceship put: newPosition.
 	self checkWinner: aSpaceship
 ]
@@ -140,15 +136,9 @@ Game >> ranking [
 
 { #category : 'game logic' }
 Game >> sendAllSpaceshipsToFirstTile [
-	"Mensaje invocado por los efectos para resetear a todas las naves al primer
-	casillero, manteniendo la vuelta actual de cada una."
 
 	players do: [ :each |
-		| currentLaps |
-		currentLaps := (positions at: each) laps.
-		positions at: each put: (Position at: 1 withLaps: currentLaps) ]
-
-
+		positions at: each put: (positions at: each) resetToFirstTile ]
 ]
 
 { #category : 'accessing' }
