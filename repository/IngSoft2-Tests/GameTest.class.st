@@ -11,7 +11,7 @@ GameTest >> noEffectBoard: n [
 	^ Board withTiles: ((1 to: n) collect: [ :i | NoEffect new ])
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - game start/finish' }
 GameTest >> test001AGameThatStartsIsNotFinished [
 
 	| aGame aShip aDiceCup aBoard |
@@ -26,7 +26,7 @@ GameTest >> test001AGameThatStartsIsNotFinished [
 	self deny: aGame hasFinished
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - game start/finish' }
 GameTest >> test002AGameEndsWhenTheGoalIsReached [
 
 	| aGame aShip aDiceCup aBoard |
@@ -42,7 +42,7 @@ GameTest >> test002AGameEndsWhenTheGoalIsReached [
 	self assert: aGame hasFinished
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - game logic' }
 GameTest >> test003ANewSpaceshipStartsAtPositionOne [
 
 	| aGame aShip aDiceCup aBoard |
@@ -57,7 +57,7 @@ GameTest >> test003ANewSpaceshipStartsAtPositionOne [
 	self assert: (aGame positionOf: aShip) equals: 1
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - game logic' }
 GameTest >> test004APlayerAdvancesInTheCorrectAmountWhenPlayingItsTurn [
 
 	| aGame aShip aDiceCup aBoard |
@@ -73,7 +73,7 @@ GameTest >> test004APlayerAdvancesInTheCorrectAmountWhenPlayingItsTurn [
 	self assert: (aGame positionOf: aShip) equals: 7
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - game logic' }
 GameTest >> test005WhenASpaceshipReachesTheGoalThenItWins [
 
 	| aGame aShip aDiceCup aBoard |
@@ -89,7 +89,7 @@ GameTest >> test005WhenASpaceshipReachesTheGoalThenItWins [
 	self assert: aGame winner equals: aShip
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - game start/finish' }
 GameTest >> test006WhenTheGameHasFinishedPlayNextTurnRaisesAnError [
 
 	| aGame aShip aDiceCup aBoard |
@@ -111,7 +111,7 @@ GameTest >> test006WhenTheGameHasFinishedPlayNextTurnRaisesAnError [
 					equals: 'The game has already finished.' ]
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - instance creation' }
 GameTest >> test007WhenCreatingAGameWithNoPlayersThenErrorIsRaised [
 
 	| aDiceCup aBoard |
@@ -131,7 +131,7 @@ GameTest >> test007WhenCreatingAGameWithNoPlayersThenErrorIsRaised [
 					equals: 'A game must have at least one player.' ]
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - instance creation' }
 GameTest >> test008WhenCreatingAGameWithLapsToReachZeroThenErrorIsRaised [
 
 	| aShip aDiceCup aBoard |
@@ -152,7 +152,7 @@ GameTest >> test008WhenCreatingAGameWithLapsToReachZeroThenErrorIsRaised [
 					equals: 'The game must reach at least one lap' ]
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - game logic' }
 GameTest >> test009WhenSpaceshipsAdvancesThenItDoesntAffectOtherSpaceshipsPositions [
 
 	| aShip anotherShip aGame aDiceCup aBoard |
@@ -172,7 +172,7 @@ GameTest >> test009WhenSpaceshipsAdvancesThenItDoesntAffectOtherSpaceshipsPositi
 	self assert: (aGame positionOf: anotherShip) equals: 1
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - instance creation' }
 GameTest >> test010WhenAGameDoesntHaveADiceCupThenCannotBeCreated [
 
 	| aShip aBoard |
@@ -192,7 +192,7 @@ GameTest >> test010WhenAGameDoesntHaveADiceCupThenCannotBeCreated [
 				equals: 'A game must have a dice cup.' ]
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - game logic' }
 GameTest >> test011WhenPlayNextTurnIsCalledTwiceTheSecondPlayerMoves [
 
 	| aShip anotherShip aGame aDiceCup aBoard |
@@ -213,7 +213,7 @@ GameTest >> test011WhenPlayNextTurnIsCalledTwiceTheSecondPlayerMoves [
 	self assert: (aGame positionOf: anotherShip) equals: 7
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - game logic' }
 GameTest >> test012WhenAllThePlayersPlayedTheirTurnThenTheFirstPlayerPlaysAgain [
 
 	| aShip anotherShip aGame aDiceCup aBoard |
@@ -237,7 +237,7 @@ GameTest >> test012WhenAllThePlayersPlayedTheirTurnThenTheFirstPlayerPlaysAgain 
 	self assert: (aGame positionOf: anotherShip) equals: 7
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - game logic' }
 GameTest >> test013WhenAPlayerReachesTheAmountOfTilesThenItAdvancesToTheFollowingLap [
 
 	| aShip aGame aDiceCup aBoard |
@@ -253,7 +253,7 @@ GameTest >> test013WhenAPlayerReachesTheAmountOfTilesThenItAdvancesToTheFollowin
 	self assert: (aGame lapOf: aShip) equals: 2
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - game logic' }
 GameTest >> test014WhenFirstPlayerPlaysThenSecondPlayerIsTheNextToMove [
 
 	| aShip anotherShip aGame aDiceCup aBoard |
@@ -279,7 +279,7 @@ GameTest >> test014WhenFirstPlayerPlaysThenSecondPlayerIsTheNextToMove [
 	self assert: (aGame positionOf: anotherShip) equals: 4
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - game logic' }
 GameTest >> test015WhenASpaceshipCompletesALapThenItRetunsToTheFirstTile [
 
 	| aGame aShip aDiceCup aBoard |
@@ -299,7 +299,7 @@ GameTest >> test015WhenASpaceshipCompletesALapThenItRetunsToTheFirstTile [
 	self deny: aGame hasFinished
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - ranking' }
 GameTest >> test016WhenAShipIsMoreAdvancedThanOtherShipThenItIsHigherInTheRanking [
 
 	| aGame aDiceCup aBoard firstShip secondShip ranking |
@@ -322,7 +322,7 @@ GameTest >> test016WhenAShipIsMoreAdvancedThanOtherShipThenItIsHigherInTheRankin
 	self assert: ranking last equals: firstShip
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - ranking' }
 GameTest >> test017RankingContainsAllPlayersAtStartOfGame [
 
 	| aGame aDiceCup aBoard firstShip secondShip ranking |
@@ -343,7 +343,7 @@ GameTest >> test017RankingContainsAllPlayersAtStartOfGame [
 	self assert: (ranking includes: secondShip)
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - ranking' }
 GameTest >> test018RankingConsidersLapsBeforeTileWithinTheLap [
 
 	| aGame aDiceCup aBoard firstShip secondShip ranking |
@@ -366,7 +366,7 @@ GameTest >> test018RankingConsidersLapsBeforeTileWithinTheLap [
 	self assert: ranking last equals: secondShip
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - instance creation' }
 GameTest >> test019AGameCannotBeCreatedWithoutABoard [
 
 	| aShip aDiceCup |

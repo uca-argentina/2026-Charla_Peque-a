@@ -5,7 +5,7 @@ Class {
 	#package : 'IngSoft2-Tests'
 }
 
-{ #category : 'tests' }
+{ #category : 'tests - instance creation' }
 DiceCupTest >> test001WhenADiceCupIsCreatedWithOneDiceThenRollReturnsAValidNumber [
 
 	| aDiceCup |
@@ -13,7 +13,7 @@ DiceCupTest >> test001WhenADiceCupIsCreatedWithOneDiceThenRollReturnsAValidNumbe
 	self assert: aDiceCup roll equals: 6
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - game logic' }
 DiceCupTest >> test002WhenADiceCupHasTwoDiceThenTheRollReturnsTheSumOfBothRollResults [
 
 	| aDiceCup |
@@ -23,7 +23,7 @@ DiceCupTest >> test002WhenADiceCupHasTwoDiceThenTheRollReturnsTheSumOfBothRollRe
 	self assert: aDiceCup roll equals: 12
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - instance creation' }
 DiceCupTest >> test003WhenADiceCupIsCreatedEmptyThenItCannotBeCreated [
 
 	self

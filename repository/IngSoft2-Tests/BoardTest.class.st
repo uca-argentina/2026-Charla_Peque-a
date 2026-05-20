@@ -11,7 +11,7 @@ BoardTest >> noEffectTiles: n [
 	^ (1 to: n) collect: [ :i | NoEffect new ]
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - instance creation' }
 BoardTest >> test001ABoardCannotBeCreatedWithAnEmptyTileCollection [
  
 	self
@@ -24,7 +24,7 @@ BoardTest >> test001ABoardCannotBeCreatedWithAnEmptyTileCollection [
 
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - instance creation' }
 BoardTest >> test002ABoardCannotBeCreatedWithNonTileElements [
  
 	self
@@ -36,7 +36,7 @@ BoardTest >> test002ABoardCannotBeCreatedWithNonTileElements [
 					equals: 'All elements of a Board must be tiles.' ]
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - instance creation' }
 BoardTest >> test003ABoardCanBeCreatedFromACollectionOfTiles [
  
 	| aBoard |

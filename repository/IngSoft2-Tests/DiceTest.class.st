@@ -5,7 +5,7 @@ Class {
 	#package : 'IngSoft2-Tests'
 }
 
-{ #category : 'tests' }
+{ #category : 'tests - game logic' }
 DiceTest >> test001WhenTheDiceIsRolledANumberIsReturned [
 
 	| aDice |
@@ -14,7 +14,7 @@ DiceTest >> test001WhenTheDiceIsRolledANumberIsReturned [
 	self assert: aDice roll isNumber
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - game logic' }
 DiceTest >> test002WhenTheDiceIsRolledAPositiveNumberIsReturned [
 
 	| aDice |
@@ -23,7 +23,7 @@ DiceTest >> test002WhenTheDiceIsRolledAPositiveNumberIsReturned [
 	self assert: aDice roll strictlyPositive
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - game logic' }
 DiceTest >> test003WhenADiceWith6FacesIsRolledThenTheResultIsBetweenOneAndSix [
 
 	| aDice |
@@ -32,7 +32,7 @@ DiceTest >> test003WhenADiceWith6FacesIsRolledThenTheResultIsBetweenOneAndSix [
 	self assert: (aDice roll between: 1 and: 6)
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - instance creation' }
 DiceTest >> test004WhenTheNumberOfFacesIsEqualToZeroThenTheDiceIsNotCreated [
 
 	self
@@ -44,7 +44,7 @@ DiceTest >> test004WhenTheNumberOfFacesIsEqualToZeroThenTheDiceIsNotCreated [
 					equals: 'A dice cannot have less than three (3) faces.' ]
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - instance creation' }
 DiceTest >> test005WhenTheNumberOfFacesIsNegativeThenTheDiceIsNotCreated [
 
 	self
@@ -56,7 +56,7 @@ DiceTest >> test005WhenTheNumberOfFacesIsNegativeThenTheDiceIsNotCreated [
 					equals: 'A dice cannot have less than three (3) faces.' ]
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - instance creation' }
 DiceTest >> test006WhenTheDiceHasLessThanThreeFacesThenTheDiceIsNotCreated [
 
 	self

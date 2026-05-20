@@ -21,12 +21,11 @@ BoardFactoryTest >> factoryWithTiles: n [
 	^ BoardFactory
 		  withTiles: n
 		  totalParsecs: 1000
-		  moonWalkMin: 1
-		  moonWalkMax: 1
+		  moonWalkRange: #( 1 to: 5 )
 		  hyperJumpParsecs: #( 100 200 300 )
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - instance creation' }
 BoardFactoryTest >> test001WhenTheNumberOfTilesIsZeroThenTheFactoryCannotBeCreated [
 
 	self
@@ -34,8 +33,7 @@ BoardFactoryTest >> test001WhenTheNumberOfTilesIsZeroThenTheFactoryCannotBeCreat
 				BoardFactory
 					withTiles: 0
 					totalParsecs: 1000
-					moonWalkMin: 1
-					moonWalkMax: 5
+					moonWalkRange: #(1 to: 5)
 					hyperJumpParsecs: #( 100 ) ]
 		raise: Error
 		withExceptionDo: [ :error |
@@ -44,7 +42,7 @@ BoardFactoryTest >> test001WhenTheNumberOfTilesIsZeroThenTheFactoryCannotBeCreat
 					equals: 'A board must have at least one tile.' ]
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - instance creation' }
 BoardFactoryTest >> test002WhenParsecsAreNonPositiveThenAFactoryCannotBeCreated [
 
 	self
@@ -52,8 +50,7 @@ BoardFactoryTest >> test002WhenParsecsAreNonPositiveThenAFactoryCannotBeCreated 
 				BoardFactory
 					withTiles: 10
 					totalParsecs: 0
-					moonWalkMin: 1
-					moonWalkMax: 5
+					moonWalkRange: #(1 to: 5)
 					hyperJumpParsecs: #( 100 ) ]
 		raise: Error
 		withExceptionDo: [ :error |
@@ -62,16 +59,32 @@ BoardFactoryTest >> test002WhenParsecsAreNonPositiveThenAFactoryCannotBeCreated 
 					equals: 'Total parsecs must be positive.' ]
 ]
 
-{ #category : 'tests' }
-BoardFactoryTest >> test003WhenMoonWalkMinIsLessThanOneThenTheFactoryCannotBeCreated [
+{ #category : 'tests - instance creation' }
+BoardFactoryTest >> test003WhenMoonWalkRangeIsEmptyThenTheFactoryCannotBeCreated [
 
 	self
 		should: [
 				BoardFactory
 					withTiles: 10
 					totalParsecs: 1000
-					moonWalkMin: 0
-					moonWalkMax: 5
+					moonWalkRange: #(  )
+					hyperJumpParsecs: #( 100 ) ]
+		raise: Error
+		withExceptionDo: [ :error |
+				self
+					assert: error messageText
+					equals: 'MoonWalk range cannot be empty.' ]
+]
+
+{ #category : 'tests - instance creation' }
+BoardFactoryTest >> test004WhenMoonWalkMinIsLessThanOneThenTheFactoryCannotBeCreated [
+
+	self
+		should: [
+				BoardFactory
+					withTiles: 10
+					totalParsecs: 1000
+					moonWalkRange: #(0 to: 5)
 					hyperJumpParsecs: #( 100 ) ]
 		raise: Error
 		withExceptionDo: [ :error |
@@ -80,16 +93,15 @@ BoardFactoryTest >> test003WhenMoonWalkMinIsLessThanOneThenTheFactoryCannotBeCre
 					equals: 'MoonWalk min must be at least one.' ]
 ]
 
-{ #category : 'tests' }
-BoardFactoryTest >> test004WhenMoonWalkMaxIsLessThanMinThenTheFactoryCannotBeCreated [
+{ #category : 'tests - instance creation' }
+BoardFactoryTest >> test005WhenMoonWalkMaxIsLessThanMinThenTheFactoryCannotBeCreated [
 
 	self
 		should: [
 				BoardFactory
 					withTiles: 10
 					totalParsecs: 1000
-					moonWalkMin: 5
-					moonWalkMax: 2
+					moonWalkRange: #(5 to: 2)
 					hyperJumpParsecs: #( 100 ) ]
 		raise: Error
 		withExceptionDo: [ :error |
@@ -98,16 +110,15 @@ BoardFactoryTest >> test004WhenMoonWalkMaxIsLessThanMinThenTheFactoryCannotBeCre
 					equals: 'MoonWalk max must be greater than or equal to min.' ]
 ]
 
-{ #category : 'tests' }
-BoardFactoryTest >> test005WhenHyperJumpParsecsListIsEmptyThenTheFactoryCannotBeCreated [
+{ #category : 'tests - instance creation' }
+BoardFactoryTest >> test006WhenHyperJumpParsecsListIsEmptyThenTheFactoryCannotBeCreated [
 
 	self
 		should: [
 				BoardFactory
 					withTiles: 10
 					totalParsecs: 1000
-					moonWalkMin: 1
-					moonWalkMax: 5
+					moonWalkRange: (1 to: 5)
 					hyperJumpParsecs: #(  ) ]
 		raise: Error
 		withExceptionDo: [ :error |
@@ -116,8 +127,8 @@ BoardFactoryTest >> test005WhenHyperJumpParsecsListIsEmptyThenTheFactoryCannotBe
 					equals: 'HyperJump parsecs list cannot be empty.' ]
 ]
 
-{ #category : 'tests' }
-BoardFactoryTest >> test006WhenAFactoryBuildsABoardThenItHasTheRequestedNumberOfTiles [
+{ #category : 'tests - board properties' }
+BoardFactoryTest >> test007WhenAFactoryBuildsABoardThenItHasTheRequestedNumberOfTiles [
 
 	| factory board |
 	factory := self factoryWithTiles: 100.
@@ -125,112 +136,175 @@ BoardFactoryTest >> test006WhenAFactoryBuildsABoardThenItHasTheRequestedNumberOf
 	self assert: board numberOfTiles equals: 100
 ]
 
-{ #category : 'tests' }
-BoardFactoryTest >> test007WhenAFactoryBuildsA100TileBoardThenTheDistributionIsExact [
+{ #category : 'tests - board properties' }
+BoardFactoryTest >> test008WhenAFactoryBuildsABoardThenAllTilesAreTileInstances [
 
-	| factory board |
+	| factory board allTiles |
+	factory := self factoryWithTiles: 50.
+	board := factory build.
+	allTiles := (1 to: board numberOfTiles) collect: [ :i |
+		            board tileAt: i ].
+	self assert: (allTiles allSatisfy: [ :each | each isKindOf: Tile ])
+]
+
+{ #category : 'tests - probabilistic distribution' }
+BoardFactoryTest >> test009WhenBuildingManyBoardsThenNoEffectAppearsInApproximately40Percent [
+
+	| factory counts totalNoEffect percentage |
 	factory := self factoryWithTiles: 100.
-	board := factory build.
+	counts := (1 to: 500) collect: [ :i |
+			          | board |
+			          board := factory build.
+			          self countTiles: board ofClass: NoEffect ].
 
-	self assert: (self countTiles: board ofClass: NoEffect) equals: 40.
-	self assert: (self countTiles: board ofClass: WormHole) equals: 20.
-	self assert: (self countTiles: board ofClass: SpeedUp) equals: 20.
-	self assert: (self countTiles: board ofClass: MoonWalk) equals: 10.
-	self assert: (self countTiles: board ofClass: HyperJump) equals: 8.
-	self assert: (self countTiles: board ofClass: AtomicBomb) equals: 2
+	totalNoEffect := counts sum.
+	percentage := totalNoEffect / 50000.0 * 100.
+
+	self assert: (percentage between: 38 and: 42)
 ]
 
-{ #category : 'tests' }
-BoardFactoryTest >> test008WhenAFactoryBuildsA1000TileBoardThenTheDistributionIsExact [
+{ #category : 'tests - probabilistic distribution' }
+BoardFactoryTest >> test010WhenBuildingManyBoardsThenWormHoleAppearsInApproximately20Percent [
 
-	| factory board |
-	factory := self factoryWithTiles: 1000.
-	board := factory build.
-
-	self assert: (self countTiles: board ofClass: NoEffect) equals: 400.
-	self assert: (self countTiles: board ofClass: WormHole) equals: 200.
-	self assert: (self countTiles: board ofClass: SpeedUp) equals: 200.
-	self assert: (self countTiles: board ofClass: MoonWalk) equals: 100.
-	self assert: (self countTiles: board ofClass: HyperJump) equals: 80.
-	self assert: (self countTiles: board ofClass: AtomicBomb) equals: 20
-]
-
-{ #category : 'tests' }
-BoardFactoryTest >> test009WhenTheDistributionHasARemainderThenItIsAssignedToNoEffect [
-
-	| factory board |
-	factory := self factoryWithTiles: 17.
-	board := factory build.
-
-	self assert: board numberOfTiles equals: 17.
-	self assert: (self countTiles: board ofClass: WormHole) equals: 3.
-	self assert: (self countTiles: board ofClass: SpeedUp) equals: 3.
-	self assert: (self countTiles: board ofClass: MoonWalk) equals: 1.
-	self assert: (self countTiles: board ofClass: HyperJump) equals: 1.
-	self assert: (self countTiles: board ofClass: AtomicBomb) equals: 0.
-	self assert: (self countTiles: board ofClass: NoEffect) equals: 9
-]
-
-{ #category : 'tests' }
-BoardFactoryTest >> test010WhenAFactoryBuildsABoardThenTilesAreShuffled [
-
-	| factory board firstTiles allNoEffect |
+	| factory counts totalWormHole percentage |
 	factory := self factoryWithTiles: 100.
-	board := factory build.
-	firstTiles := (1 to: 40) collect: [ :i | board tileAt: i ].
-	allNoEffect := firstTiles allSatisfy: [ :each |
-		               each isKindOf: NoEffect ].
-	self deny: allNoEffect
+	counts := (1 to: 500) collect: [ :i |
+			          | board |
+			          board := factory build.
+			          self countTiles: board ofClass: WormHole ].
+
+	totalWormHole := counts sum.
+	percentage := totalWormHole / 50000.0 * 100.
+	self assert: (percentage between: 18 and: 22)
 ]
 
-{ #category : 'tests' }
-BoardFactoryTest >> test011WhenMoonWalkRangeIsFixedThenAllMoonWalksHaveTheSameValue [
+{ #category : 'tests - probabilistic distribution' }
+BoardFactoryTest >> test011WhenBuildingManyBoardsThenSpeedUpAppearsInApproximately20Percent [
 
-	| factory board moonWalks |
-	factory := BoardFactory
-		           withTiles: 1000
-		           totalParsecs: 1000
-		           moonWalkMin: 2
-		           moonWalkMax: 2
-		           hyperJumpParsecs: #( 100 200 ).
-	board := factory build.
-	moonWalks := (1 to: board numberOfTiles)
-		             collect: [ :i | board tileAt: i ]
-		             thenSelect: [ :each | each isKindOf: MoonWalk ].
+	| factory counts totalSpeedUp percentage |
+	factory := self factoryWithTiles: 100.
+	counts := (1 to: 500) collect: [ :i |
+			          | board |
+			          board := factory build.
+			          self countTiles: board ofClass: SpeedUp ].
 
-	self deny: moonWalks isEmpty.
-	moonWalks do: [ :mw |
-			| n |
-			n := mw tilesBack.
-			self assert: n equals: 2 ]
+	totalSpeedUp := counts sum.
+	percentage := totalSpeedUp / 50000.0 * 100.
+
+	self assert: (percentage between: 18 and: 22)
 ]
 
-{ #category : 'tests' }
-BoardFactoryTest >> test012WhenMoonWalkRangeIsWideThenDifferentMoonWalksCanHaveDifferentValues [
+{ #category : 'tests - probabilistic distribution' }
+BoardFactoryTest >> test012WhenBuildingManyBoardsThenMoonWalkAppearsInApproximately10Percent [
 
-	| factory board moonWalks allEqual |
-	factory := BoardFactory
-		           withTiles: 1000
-		           totalParsecs: 1000
-		           moonWalkMin: 1
-		           moonWalkMax: 10
-		           hyperJumpParsecs: #( 100 ).
-	board := factory build.
-	moonWalks := (1 to: board numberOfTiles)
-		             collect: [ :i | board tileAt: i ]
-		             thenSelect: [ :each | each isKindOf: MoonWalk ].
-	allEqual := moonWalks allSatisfy: [ :mw |
-		            mw tilesBack = moonWalks first tilesBack ].
+	| factory counts totalMoonWalk percentage |
+	factory := self factoryWithTiles: 100.
+	counts := (1 to: 500) collect: [ :i |
+			          | board |
+			          board := factory build.
+			          self countTiles: board ofClass: MoonWalk ].
 
-	self deny: allEqual
+	totalMoonWalk := counts sum.
+	percentage := totalMoonWalk / 50000.0 * 100.
+
+	self assert: (percentage between: 8 and: 12)
 ]
 
-{ #category : 'tests' }
-BoardFactoryTest >> test013WhenAFactoryBuildsASmallBoardThenItStillWorksCorrectly [
+{ #category : 'tests - probabilistic distribution' }
+BoardFactoryTest >> test013WhenBuildingManyBoardsThenHyperJumpAppearsInApproximately8Percent [
 
-	| factory board |
+	| factory counts totalHyperJump percentage |
+	factory := self factoryWithTiles: 100.
+	counts := (1 to: 500) collect: [ :i |
+			          | board |
+			          board := factory build.
+			          self countTiles: board ofClass: HyperJump ].
+
+	totalHyperJump := counts sum.
+	percentage := totalHyperJump / 50000.0 * 100.
+
+	self assert: (percentage between: 6 and: 10)
+]
+
+{ #category : 'tests - probabilistic distribution' }
+BoardFactoryTest >> test014WhenBuildingManyBoardsThenAtomicBombAppearsInApproximately2Percent [
+
+	| factory counts totalAtomicBomb percentage |
+	factory := self factoryWithTiles: 100.
+	counts := (1 to: 500) collect: [ :i |
+			          | board |
+			          board := factory build.
+			          self countTiles: board ofClass: AtomicBomb ].
+
+	totalAtomicBomb := counts sum.
+	percentage := totalAtomicBomb / 50000.0 * 100.
+	self assert: (percentage between: 0 and: 4)
+]
+
+{ #category : 'tests - edge cases' }
+BoardFactoryTest >> test015WhenBuildingASingleTileBoardThenItCanBeAnyTileType [
+
+	| factory board tile |
 	factory := self factoryWithTiles: 1.
 	board := factory build.
-	self assert: board numberOfTiles equals: 1.
-	self assert: ((board tileAt: 1) isKindOf: NoEffect)
+	tile := board tileAt: 1.
+	self assert: (tile isKindOf: Tile)
+]
+
+{ #category : 'tests - moonwalk range' }
+BoardFactoryTest >> test016WhenMoonWalkRangeIsFixedThenAllMoonWalksHaveTheSameValue [
+
+	| factory boards moonWalks |
+	factory := BoardFactory
+		           withTiles: 100
+		           totalParsecs: 1000
+		           moonWalkRange: #(3 to: 3)
+		           hyperJumpParsecs: #( 100 ).
+	boards := (1 to: 10) collect: [ :i | factory build ].
+	moonWalks := boards flatCollect: [ :board |
+			             (1 to: board numberOfTiles)
+				             collect: [ :i | board tileAt: i ]
+				             thenSelect: [ :tile | tile isKindOf: MoonWalk ] ].
+
+	self deny: moonWalks isEmpty.
+	moonWalks do: [ :mw | self assert: mw tilesBack equals: 3 ]
+]
+
+{ #category : 'tests - moonwalk range' }
+BoardFactoryTest >> test017WhenMoonWalkRangeIsWideThenDifferentMoonWalksCanHaveDifferentValues [
+
+	| factory boards moonWalks distinctValues |
+	factory := BoardFactory
+		           withTiles: 100
+		           totalParsecs: 1000
+		           moonWalkRange: #(1 to: 10)
+		           hyperJumpParsecs: #( 100 ).
+
+	boards := (1 to: 20) collect: [ :i | factory build ].
+	moonWalks := boards flatCollect: [ :board |
+			             (1 to: board numberOfTiles)
+				             collect: [ :i | board tileAt: i ]
+				             thenSelect: [ :tile | tile isKindOf: MoonWalk ] ].
+
+	distinctValues := (moonWalks collect: [ :mw | mw tilesBack ]) asSet.
+	self assert: distinctValues size > 3
+]
+
+{ #category : 'tests - moonwalk range' }
+BoardFactoryTest >> test018WhenMoonWalkRangeIsAnArrayThenItWorksCorrectly [
+
+	| factory boards moonWalks |
+	factory := BoardFactory
+		           withTiles: 100
+		           totalParsecs: 1000
+		           moonWalkRange: #( 2 )
+		           hyperJumpParsecs: #( 100 ).
+
+	boards := (1 to: 10) collect: [ :i | factory build ].
+	moonWalks := boards flatCollect: [ :board |
+			             (1 to: board numberOfTiles)
+				             collect: [ :i | board tileAt: i ]
+				             thenSelect: [ :tile | tile isKindOf: MoonWalk ] ].
+	self deny: moonWalks isEmpty.
+	moonWalks do: [ :mw | self assert: mw tilesBack equals: 2 ]
 ]

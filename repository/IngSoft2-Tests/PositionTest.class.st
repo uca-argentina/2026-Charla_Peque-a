@@ -11,6 +11,39 @@ PositionTest >> boardWithTiles: n [
 	^ Board withTiles: ((1 to: n) collect: [ :i | NoEffect new ])
 ]
 
+{ #category : 'tests - instance creation' }
+PositionTest >> test001WhenCreatingAPositionWithValidParametersThenItIsCreated [
+
+	| position |
+	position := Position at: 5 withLaps: 2.
+	self assert: position tile equals: 5.
+	self assert: position laps equals: 2
+]
+
+{ #category : 'tests - instance creation' }
+PositionTest >> test002WhenCreatingAPositionWithTileLessThanOneThenItCannotBeCreated [
+
+	self
+		should: [ Position at: 0 withLaps: 1 ]
+		raise: Error
+		withExceptionDo: [ :error |
+				self
+					assert: error messageText
+					equals: 'Starting position cannot be less than one.' ]
+]
+
+{ #category : 'tests - instance creation' }
+PositionTest >> test003WhenCreatingAPositionWithLapsLessThanOneThenItCannotBeCreated [
+
+	self
+		should: [ Position at: 1 withLaps: 0 ]
+		raise: Error
+		withExceptionDo: [ :error |
+				self
+					assert: error messageText
+					equals: 'Number of Laps cannot be less than one.' ]
+]
+
 { #category : 'tests - moving forward' }
 PositionTest >> test004WhenAPositionMovesForwardWithinTheSameLapThenItAdvancesCorrectly [
 
@@ -58,6 +91,18 @@ PositionTest >> test007WhenAPositionMovesForwardExactlyOneLapThenItReturnsToFirs
 	self assert: newPosition laps equals: 2
 ]
 
+{ #category : 'tests - moving forward' }
+PositionTest >> test008WhenAPositionMovesForwardMultipleLapsThenItIncrementsLapCorrectly [
+
+	| board position newPosition |
+	board := self boardWithTiles: 5.
+	position := Position at: 3 withLaps: 1.
+	newPosition := position moveBy: 12 on: board.
+
+	self assert: newPosition tile equals: 5.
+	self assert: newPosition laps equals: 3
+]
+
 { #category : 'tests - moving backward' }
 PositionTest >> test009WhenAPositionMovesBackwardWithinTheSameLapThenItRetreatsCorrectly [
 
@@ -103,4 +148,38 @@ PositionTest >> test012WhenAPositionMovesBackwardExactlyOneLapThenItGoesToLastTi
 
 	self assert: newPosition tile equals: 1.
 	self assert: newPosition laps equals: 2
+]
+
+{ #category : 'tests - moving backward' }
+PositionTest >> test013WhenAPositionMovesBackwardMultipleLapsThenItDecrementsLapCorrectly [
+
+	| board position newPosition |
+	board := self boardWithTiles: 5.
+	position := Position at: 2 withLaps: 5.
+	newPosition := position moveBy: -12 on: board.
+	self assert: newPosition tile equals: 5.
+	self assert: newPosition laps equals: 2
+]
+
+{ #category : 'tests - clamping' }
+PositionTest >> test014WhenAPositionMovesBackwardBeforeTheStartThenItClampsToFirstTileAndFirstLap [
+
+	| board position newPosition |
+	board := self boardWithTiles: 10.
+	position := Position at: 3 withLaps: 1.
+	newPosition := position moveBy: -10 on: board.
+	self assert: newPosition tile equals: 1.
+	self assert: newPosition laps equals: 1
+]
+
+{ #category : 'tests - clamping' }
+PositionTest >> test015WhenAPositionMovesBackwardManyLapsBeforeTheStartThenItClampsToFirstTileAndFirstLap [
+
+	| board position newPosition |
+	board := self boardWithTiles: 5.
+	position := Position at: 2 withLaps: 2.
+	newPosition := position moveBy: -50 on: board.
+
+	self assert: newPosition tile equals: 1.
+	self assert: newPosition laps equals: 1
 ]

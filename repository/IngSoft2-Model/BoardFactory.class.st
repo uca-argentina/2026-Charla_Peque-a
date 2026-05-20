@@ -13,103 +13,73 @@ Class {
 }
 
 { #category : 'instance creation' }
-BoardFactory class >> withTiles: aNumberOfTiles totalParsecs: aTotalParsecs moonWalkMin: aMin moonWalkMax: aMax hyperJumpParsecs: aHyperJumpCollection [
+BoardFactory class >> withTiles: aNumberOfTiles totalParsecs: aTotalParsecs moonWalkRange: mwRange hyperJumpParsecs: aHyperJumpCollection [
 
 	aNumberOfTiles < 1 ifTrue: [
 		Error signal: 'A board must have at least one tile.' ].
 	aTotalParsecs <= 0 ifTrue: [
 		Error signal: 'Total parsecs must be positive.' ].
-	aMin < 1 ifTrue: [
+	mwRange isEmpty ifTrue: [
+		Error signal: 'MoonWalk range cannot be empty.' ].
+	mwRange first < 1 ifTrue: [
 		Error signal: 'MoonWalk min must be at least one.' ].
-	aMax < aMin ifTrue: [
+	mwRange last < mwRange first ifTrue: [
 		Error signal: 'MoonWalk max must be greater than or equal to min.' ].
 	aHyperJumpCollection isEmpty ifTrue: [
 		Error signal: 'HyperJump parsecs list cannot be empty.' ].
 	^ self new
 		  initializeWithTiles: aNumberOfTiles
 		  totalParsecs: aTotalParsecs
-		  moonWalkMin: aMin
-		  moonWalkMax: aMax
+		  moonWalkRange: mwRange
 		  hyperJumpParsecs: aHyperJumpCollection
 ]
 
 { #category : 'building' }
 BoardFactory >> build [
 
-	| tiles converter counts |
-	counts := self computeCounts.
+	| tiles converter |
 	converter := ParsecConverter
 		             withTotalParsecs: totalParsecs
 		             numberOfTiles: numberOfTiles.
 
-	tiles := OrderedCollection new.
-	(counts at: #noEffect) timesRepeat: [ tiles add: NoEffect new ].
-	(counts at: #wormHole) timesRepeat: [ tiles add: WormHole new ].
-	(counts at: #speedUp) timesRepeat: [ tiles add: SpeedUp new ].
-	(counts at: #moonWalk) timesRepeat: [
-		tiles add: (MoonWalk withTilesBack: self randomMoonWalkValue) ].
-	(counts at: #hyperJump) timesRepeat: [
-			tiles add:
-				(HyperJump withParsecs: hyperJumpParsecs converter: converter) ].
-	(counts at: #atomicBomb) timesRepeat: [ tiles add: AtomicBomb new ].
+	tiles := (1 to: numberOfTiles) collect: [ :i |
+		         self randomTileWithConverter: converter ].
 
-	^ Board withTiles: (self shuffle: tiles)
-]
-
-{ #category : 'private' }
-BoardFactory >> computeCounts [
-
-
-	| counts noEffectCount wormHoleCount speedUpCount moonWalkCount hyperJumpCount atomicBombCount assigned remainder |
-	wormHoleCount := (numberOfTiles * 20 / 100) truncated.
-	speedUpCount := (numberOfTiles * 20 / 100) truncated.
-	moonWalkCount := (numberOfTiles * 10 / 100) truncated.
-	hyperJumpCount := (numberOfTiles * 8 / 100) truncated.
-	atomicBombCount := (numberOfTiles * 2 / 100) truncated.
-	noEffectCount := (numberOfTiles * 40 / 100) truncated.
-
-	assigned := noEffectCount + wormHoleCount + speedUpCount
-	            + moonWalkCount + hyperJumpCount + atomicBombCount.
-	remainder := numberOfTiles - assigned.
-	noEffectCount := noEffectCount + remainder.
-
-	counts := Dictionary new.
-	counts at: #noEffect put: noEffectCount.
-	counts at: #wormHole put: wormHoleCount.
-	counts at: #speedUp put: speedUpCount.
-	counts at: #moonWalk put: moonWalkCount.
-	counts at: #hyperJump put: hyperJumpCount.
-	counts at: #atomicBomb put: atomicBombCount.
-	^ counts
+	^ Board withTiles: tiles
 ]
 
 { #category : 'initialization' }
-BoardFactory >> initializeWithTiles: aNumberOfTiles totalParsecs: aTotalParsecs moonWalkMin: aMin moonWalkMax: aMax hyperJumpParsecs: aHyperJumpCollection [
+BoardFactory >> initializeWithTiles: aNumberOfTiles totalParsecs: aTotalParsecs moonWalkRange: mwRange hyperJumpParsecs: aHyperJumpCollection [
 
 	numberOfTiles := aNumberOfTiles.
 	totalParsecs := aTotalParsecs.
-	moonWalkMin := aMin.
-	moonWalkMax := aMax.
+	moonWalkMin := mwRange first.
+	moonWalkMax := mwRange last.
 	hyperJumpParsecs := aHyperJumpCollection
 ]
 
 { #category : 'private' }
 BoardFactory >> randomMoonWalkValue [
 
-^(moonWalkMin to: moonWalkMax ) atRandom .
+	^ (moonWalkMin to: moonWalkMax) atRandom
 ]
 
 { #category : 'private' }
-BoardFactory >> shuffle: aCollection [
+BoardFactory >> randomTileWithConverter: converter [
+	| roll |
+	roll := (1 to: 100) atRandom.
 
-	| array n j temp random |
-	random:= Random new.
-	array := aCollection asArray copy.
-	n := array size.
-	n to: 2 by: -1 do: [ :i |
-			j := random nextInteger: i.
-			temp := array at: i.
-			array at: i put: (array at: j).
-			array at: j put: temp ].
-	^ array
+	roll <= 40 ifTrue: [ ^ NoEffect new ].
+
+	roll <= 60 ifTrue: [ ^ WormHole new ].
+
+	roll <= 80 ifTrue: [ ^ SpeedUp new ].
+
+	roll <= 90 ifTrue: [
+		^ MoonWalk withTilesBack: self randomMoonWalkValue ].
+
+	roll <= 98 ifTrue: [
+		^ HyperJump withParsecs: hyperJumpParsecs converter: converter ].
+
+	^ AtomicBomb new
 ]

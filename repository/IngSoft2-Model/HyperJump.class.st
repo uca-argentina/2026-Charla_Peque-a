@@ -13,10 +13,10 @@ Class {
 { #category : 'instance creation' }
 HyperJump class >> withParsecs: aParsecsList converter: aConverter [
 
-	aParsecsList isEmpty ifTrue: [
-		Error signal: 'HyperJump must have at least one parsec value.' ].
-	aConverter ifNil: [ Error signal: 'HyperJump must have a converter.' ].
-	^ self new initializeWithParsecs: aParsecsList converter: aConverter
+    aParsecsList isEmpty ifTrue: [
+        Error signal: 'HyperJump must have at least one parsec value.' ].
+    aConverter ifNil: [ Error signal: 'HyperJump must have a converter.' ].
+    ^ self new initializeWithParsecs: aParsecsList converter: aConverter
 ]
 
 { #category : 'applying' }

@@ -73,7 +73,7 @@ HyperJumpTest >> test004ParsecConverterTruncatesResult [
 	self assert: (converter tilesForParsecs: 25) equals: 2
 ]
 
-{ #category : 'tests - HyperJump creation' }
+{ #category : 'tests - instance creation' }
 HyperJumpTest >> test005HyperJumpCannotBeCreatedWithEmptyParsecsList [
 
 	| converter |
@@ -87,7 +87,7 @@ HyperJumpTest >> test005HyperJumpCannotBeCreatedWithEmptyParsecsList [
 					equals: 'HyperJump must have at least one parsec value.' ]
 ]
 
-{ #category : 'tests - HyperJump creation' }
+{ #category : 'tests - instance creation' }
 HyperJumpTest >> test006HyperJumpCannotBeCreatedWithNilConverter [
 
 	self
@@ -99,7 +99,7 @@ HyperJumpTest >> test006HyperJumpCannotBeCreatedWithNilConverter [
 					equals: 'HyperJump must have a converter.' ]
 ]
 
-{ #category : 'tests - HyperJump creation' }
+{ #category : 'tests - instance creation' }
 HyperJumpTest >> test007HyperJumpSortsParsecListFromHighestToLowest [
 
 	| converter aShip aGame |
@@ -127,7 +127,7 @@ HyperJumpTest >> test007HyperJumpSortsParsecListFromHighestToLowest [
 	self assert: (aGame positionOf: aShip) equals: 6
 ]
 
-{ #category : 'tests - HyperJump behavior' }
+{ #category : 'tests - game logic' }
 HyperJumpTest >> test008WhenAShipLandsOnHyperJumpItAdvancesTheCorrectNumberOfTiles [
 
 	| converter aShip aGame |
@@ -154,7 +154,7 @@ HyperJumpTest >> test008WhenAShipLandsOnHyperJumpItAdvancesTheCorrectNumberOfTil
 	self assert: (aGame positionOf: aShip) equals: 7
 ]
 
-{ #category : 'tests - HyperJump behavior' }
+{ #category : 'tests - game logic' }
 HyperJumpTest >> test009HyperJumpAppliesParsecValuesFromHighestToLowest [
 
 	| converter aShip aGame |
@@ -181,7 +181,7 @@ HyperJumpTest >> test009HyperJumpAppliesParsecValuesFromHighestToLowest [
 	self assert: (aGame positionOf: aShip) equals: 7.
 ]
 
-{ #category : 'tests - HyperJump behavior' }
+{ #category : 'tests - game logic' }
 HyperJumpTest >> test010HyperJumpCyclesThroughParsecValuesAndResets [
 
 	| converter aShip aGame |

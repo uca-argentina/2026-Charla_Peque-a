@@ -80,11 +80,10 @@ Game >> lapOf: aSpaceship [
 
 { #category : 'game logic' }
 Game >> moveAllSpaceshipsExceptCurrentBy: aNumberOfSteps [
-	"Mensaje invocado por los efectos para mover a todas las naves excepto una.
-	No dispara nuevos efectos."
+
 	players do: [ :each |
-		(each = (self currentPlayer)) ifFalse: [
-			self moveSpaceship: each by: aNumberOfSteps ] ]
+			each = self currentPlayer ifFalse: [
+				self moveSpaceship: each by: aNumberOfSteps ] ]
 ]
 
 { #category : 'game logic' }
@@ -124,14 +123,14 @@ Game >> positionOf: aSpaceship [
 
 { #category : 'game logic' }
 Game >> ranking [
-	"Devuelve una colección de naves ordenadas desde la primera hasta la última."
+
 	^ players sorted: [ :shipA :shipB |
-		| posA posB |
-		posA := positions at: shipA.
-		posB := positions at: shipB.
-		
-		posA laps > posB laps or: [
-			posA laps = posB laps and: [ posA tile > posB tile ] ] ].
+			  | posA posB |
+			  posA := positions at: shipA.
+			  posB := positions at: shipB.
+
+			  posA laps > posB laps or: [
+				  posA laps = posB laps and: [ posA tile > posB tile ] ] ]
 ]
 
 { #category : 'game logic' }
