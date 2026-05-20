@@ -8,8 +8,8 @@ Class {
 	#package : 'IngSoft2-Model'
 }
 
-{ #category : 'as yet unclassified' }
-DiceCup class >> withDices: aCollectionOfDice [
+{ #category : 'instance creation' }
+DiceCup class >> withDice: aCollectionOfDice [
 
 	aCollectionOfDice isEmpty ifTrue: [
 		Error signal: 'A dice cup cannot be empty.' ].
@@ -18,11 +18,12 @@ DiceCup class >> withDices: aCollectionOfDice [
 
 { #category : 'initialization' }
 DiceCup >> initializeWithDice: aCollectionOfDice [
-	dice:= aCollectionOfDice.
-	
+
+	dice := aCollectionOfDice
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'game logic' }
 DiceCup >> roll [
-^ dice sum: [:aDice | aDice roll].
+
+	^ dice sum: [ :aDice | aDice roll ]
 ]
