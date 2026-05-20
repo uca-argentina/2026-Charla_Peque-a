@@ -66,6 +66,7 @@ BoardFactory >> randomMoonWalkValue [
 
 { #category : 'private' }
 BoardFactory >> randomTileWithConverter: converter [
+
 	| roll |
 	roll := (1 to: 100) atRandom.
 

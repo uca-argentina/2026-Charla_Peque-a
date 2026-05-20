@@ -28,7 +28,7 @@ BoardTest >> test001ABoardCannotBeCreatedWithAnEmptyTileCollection [
 BoardTest >> test002ABoardCannotBeCreatedWithNonTileElements [
  
 	self
-		should: [ Board withTiles: { NoEffect new. 'not a cell' } ]
+		should: [ Board withTiles: { NoEffect new. 'not a cel'}]
 		raise: Error
 		withExceptionDo: [ :error |
 				self

@@ -103,7 +103,7 @@ Game >> moveSpaceship: aSpaceship by: aNumberOfSteps [
 
 	| currentPosition newPosition |
 	currentPosition := positions at: aSpaceship.
-	newPosition := currentPosition moveBy: aNumberOfSteps on: board.
+	newPosition := currentPosition moveBy: aNumberOfSteps withNumberOfTiles: board numberOfTiles .
 	positions at: aSpaceship put: newPosition.
 	self checkWinner: aSpaceship
 ]
