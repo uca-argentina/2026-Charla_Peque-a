@@ -1,8 +1,8 @@
 Class {
 	#name : 'HyperJump',
-	#superclass : 'Tile',
+	#superclass : 'Effect',
 	#instVars : [
-		'parsecsList',
+		'distances',
 		'currentIndex',
 		'converter'
 	],
@@ -11,28 +11,41 @@ Class {
 }
 
 { #category : 'instance creation' }
+HyperJump class >> withDistances: aDistanceList converter: aConverter [
+
+	aDistanceList isEmpty ifTrue: [
+		Error signal: 'HyperJump must have at least one parsec value.' ].
+	aConverter ifNil: [ Error signal: 'HyperJump must have a converter.' ].
+	^ self new initializeWithDistances: aDistanceList converter: aConverter
+]
+
+{ #category : 'instance creation' }
 HyperJump class >> withParsecs: aParsecsList converter: aConverter [
 
-    aParsecsList isEmpty ifTrue: [
-        Error signal: 'HyperJump must have at least one parsec value.' ].
-    aConverter ifNil: [ Error signal: 'HyperJump must have a converter.' ].
-    ^ self new initializeWithParsecs: aParsecsList converter: aConverter
+	"Convenience: accepts raw numbers as parsec values."
+
+	| asDistances |
+	aParsecsList isEmpty ifTrue: [
+		Error signal: 'HyperJump must have at least one parsec value.' ].
+	asDistances := aParsecsList collect: [ :each | Distance parsecs: each ].
+	^ self withDistances: asDistances converter: aConverter
 ]
 
 { #category : 'applying' }
-HyperJump >> applyOn: aGame [
+HyperJump >> applyOn: aGame for: aSpaceship [
 
-	| parsecs tiles |
-	parsecs := parsecsList at: currentIndex.
-	currentIndex := currentIndex \\ parsecsList size + 1.
-	tiles := converter tilesForParsecs: parsecs.
-	aGame moveSpaceship: aGame currentPlayer by: tiles
+	| aDistance tiles |
+	aDistance := distances at: currentIndex.
+	currentIndex := currentIndex \\ distances size + 1.
+	tiles := converter tilesForParsecs: aDistance inParsecs.
+	aGame moveSpaceship: aSpaceship by: tiles
 ]
 
 { #category : 'initialization' }
-HyperJump >> initializeWithParsecs: aParsecsList converter: aConverter [
+HyperJump >> initializeWithDistances: aDistanceList converter: aConverter [
 
-	parsecsList := aParsecsList asSortedCollection: [ :a :b | a > b ].
+	distances := aDistanceList asSortedCollection: [ :a :b |
+		             a inParsecs > b inParsecs ].
 	currentIndex := 1.
 	converter := aConverter
 ]

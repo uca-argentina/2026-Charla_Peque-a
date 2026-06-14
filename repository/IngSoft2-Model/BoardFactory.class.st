@@ -6,7 +6,8 @@ Class {
 		'totalParsecs',
 		'moonWalkMin',
 		'moonWalkMax',
-		'hyperJumpParsecs'
+		'hyperJumpParsecs',
+		'randomSource'
 	],
 	#category : 'IngSoft2-Model',
 	#package : 'IngSoft2-Model'
@@ -14,6 +15,17 @@ Class {
 
 { #category : 'instance creation' }
 BoardFactory class >> withTiles: aNumberOfTiles totalParsecs: aTotalParsecs moonWalkRange: mwRange hyperJumpParsecs: aHyperJumpCollection [
+
+	^ self
+		  withTiles: aNumberOfTiles
+		  totalParsecs: aTotalParsecs
+		  moonWalkRange: mwRange
+		  hyperJumpParsecs: aHyperJumpCollection
+		  randomSource: RandomNumberSource new
+]
+
+{ #category : 'instance creation' }
+BoardFactory class >> withTiles: aNumberOfTiles totalParsecs: aTotalParsecs moonWalkRange: mwRange hyperJumpParsecs: aHyperJumpCollection randomSource: aRandomSource [
 
 	aNumberOfTiles < 1 ifTrue: [
 		Error signal: 'A board must have at least one tile.' ].
@@ -32,6 +44,7 @@ BoardFactory class >> withTiles: aNumberOfTiles totalParsecs: aTotalParsecs moon
 		  totalParsecs: aTotalParsecs
 		  moonWalkRange: mwRange
 		  hyperJumpParsecs: aHyperJumpCollection
+		  randomSource: aRandomSource
 ]
 
 { #category : 'building' }
@@ -43,44 +56,46 @@ BoardFactory >> build [
 		             numberOfTiles: numberOfTiles.
 
 	tiles := (1 to: numberOfTiles) collect: [ :i |
-		         self randomTileWithConverter: converter ].
+		         Tile with: (self randomEffectWithConverter: converter) ].
 
 	^ Board withTiles: tiles
 ]
 
 { #category : 'initialization' }
-BoardFactory >> initializeWithTiles: aNumberOfTiles totalParsecs: aTotalParsecs moonWalkRange: mwRange hyperJumpParsecs: aHyperJumpCollection [
+BoardFactory >> initializeWithTiles: aNumberOfTiles totalParsecs: aTotalParsecs moonWalkRange: mwRange hyperJumpParsecs: aHyperJumpCollection randomSource: aRandomSource [
 
 	numberOfTiles := aNumberOfTiles.
 	totalParsecs := aTotalParsecs.
 	moonWalkMin := mwRange first.
 	moonWalkMax := mwRange last.
-	hyperJumpParsecs := aHyperJumpCollection
+	hyperJumpParsecs := aHyperJumpCollection.
+	randomSource := aRandomSource
+]
+
+{ #category : 'private' }
+BoardFactory >> randomEffectWithConverter: converter [
+
+	"Distribution (entrega 3):
+	 NoEffect 30%, WormHole 20%, SpeedUp 20%, MoonWalk 10%,
+	 HyperJump 8%, AtomicBomb 2%, GiveCard 10%."
+
+	| roll |
+	roll := randomSource nextInt: 100.
+
+	roll <= 30 ifTrue: [ ^ NoEffect new ].
+	roll <= 50 ifTrue: [ ^ WormHole new ].
+	roll <= 70 ifTrue: [ ^ SpeedUp new ].
+	roll <= 80 ifTrue: [ ^ MoonWalk withTilesBack: self randomMoonWalkValue ].
+	roll <= 88 ifTrue: [ ^ HyperJump withParsecs: hyperJumpParsecs converter: converter ].
+	roll <= 90 ifTrue: [ ^ AtomicBomb new ].
+	^ GiveCard new
 ]
 
 { #category : 'private' }
 BoardFactory >> randomMoonWalkValue [
 
-	^ (moonWalkMin to: moonWalkMax) atRandom
-]
-
-{ #category : 'private' }
-BoardFactory >> randomTileWithConverter: converter [
-
-	| roll |
-	roll := (1 to: 100) atRandom.
-
-	roll <= 40 ifTrue: [ ^ NoEffect new ].
-
-	roll <= 60 ifTrue: [ ^ WormHole new ].
-
-	roll <= 80 ifTrue: [ ^ SpeedUp new ].
-
-	roll <= 90 ifTrue: [
-		^ MoonWalk withTilesBack: self randomMoonWalkValue ].
-
-	roll <= 98 ifTrue: [
-		^ HyperJump withParsecs: hyperJumpParsecs converter: converter ].
-
-	^ AtomicBomb new
+	| span offset |
+	span := moonWalkMax - moonWalkMin + 1.
+	offset := randomSource nextInt: span.
+	^ moonWalkMin + offset - 1
 ]

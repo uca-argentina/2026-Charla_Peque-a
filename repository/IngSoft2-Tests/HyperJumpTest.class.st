@@ -10,25 +10,25 @@ HyperJumpTest >> gameWith: aTileCollection players: aShipCollection laps: n dice
 
 	| aBoard aDiceCup |
 	aBoard := Board withTiles: aTileCollection.
-	aDiceCup := DiceCup withDice:
-		            { (LoadedDice withForcedResult: aResult) }.
+	aDiceCup := DiceCup withDice: { (LoadedDice withForcedResult: aResult) }.
 	^ Game
 		  playedBy: aShipCollection
 		  reachingLaps: n
 		  withBoard: aBoard
 		  andDiceCup: aDiceCup
+		  withDeck: (SequenceDeck withCards: { Acceleration new })
 ]
 
 { #category : 'helpers' }
-HyperJumpTest >> noEffect [
+HyperJumpTest >> hyperJumpTileWithParsecs: aList converter: aConverter [
 
-	^ NoEffect new
+	^ Tile with: (HyperJump withParsecs: aList converter: aConverter)
 ]
 
 { #category : 'helpers' }
-HyperJumpTest >> noEffectBoard: n [
+HyperJumpTest >> noEffectTile [
 
-	^ Board withTiles: ((1 to: n) collect: [ :i | NoEffect new ])
+	^ Tile with: NoEffect new
 ]
 
 { #category : 'tests - ParsecConverter' }
@@ -38,9 +38,9 @@ HyperJumpTest >> test001ParsecConverterCannotBeCreatedWithNonPositiveParsecs [
 		should: [ ParsecConverter withTotalParsecs: 0 numberOfTiles: 10 ]
 		raise: Error
 		withExceptionDo: [ :error |
-				self
-					assert: error messageText
-					equals: 'Total parsecs must be positive.' ]
+			self
+				assert: error messageText
+				equals: 'Total parsecs must be positive.' ]
 ]
 
 { #category : 'tests - ParsecConverter' }
@@ -50,9 +50,9 @@ HyperJumpTest >> test002ParsecConverterCannotBeCreatedWithNonPositiveTiles [
 		should: [ ParsecConverter withTotalParsecs: 100 numberOfTiles: 0 ]
 		raise: Error
 		withExceptionDo: [ :error |
-				self
-					assert: error messageText
-					equals: 'Number of tiles must be positive.' ]
+			self
+				assert: error messageText
+				equals: 'Number of tiles must be positive.' ]
 ]
 
 { #category : 'tests - ParsecConverter' }
@@ -82,9 +82,9 @@ HyperJumpTest >> test005HyperJumpCannotBeCreatedWithEmptyParsecsList [
 		should: [ HyperJump withParsecs: #(  ) converter: converter ]
 		raise: Error
 		withExceptionDo: [ :error |
-				self
-					assert: error messageText
-					equals: 'HyperJump must have at least one parsec value.' ]
+			self
+				assert: error messageText
+				equals: 'HyperJump must have at least one parsec value.' ]
 ]
 
 { #category : 'tests - instance creation' }
@@ -94,9 +94,9 @@ HyperJumpTest >> test006HyperJumpCannotBeCreatedWithNilConverter [
 		should: [ HyperJump withParsecs: { 10. 5 } converter: nil ]
 		raise: Error
 		withExceptionDo: [ :error |
-				self
-					assert: error messageText
-					equals: 'HyperJump must have a converter.' ]
+			self
+				assert: error messageText
+				equals: 'HyperJump must have a converter.' ]
 ]
 
 { #category : 'tests - instance creation' }
@@ -108,21 +108,16 @@ HyperJumpTest >> test007HyperJumpSortsParsecListFromHighestToLowest [
 	aShip := 'Spaceship 1'.
 	aGame := self
 		         gameWith: {
-				         self noEffect.
-				         self noEffect.
-				         self noEffect.
-				         self noEffect.
-				         (HyperJump withParsecs: { 3. 10. 5 } converter: converter).
-				         self noEffect.
-				         self noEffect.
-				         self noEffect.
-				         self noEffect.
-				         self noEffect }
+				         self noEffectTile. self noEffectTile. self noEffectTile.
+				         self noEffectTile.
+				         (self hyperJumpTileWithParsecs: { 3. 10. 5 } converter: converter).
+				         self noEffectTile. self noEffectTile. self noEffectTile.
+				         self noEffectTile. self noEffectTile }
 		         players: { aShip }
 		         laps: 3
 		         dice: 4.
 
-	"Turno 1: tira 4, cae en pos 5 (HyperJump). Aplica 10 parsecs → 1 tile. Queda en 6."
+	"Turno 1: tira 4 → pos 5 (HyperJump). Aplica 10 parsecs → 1 tile. Queda en 6."
 	aGame playNextTurn.
 	self assert: (aGame positionOf: aShip) equals: 6
 ]
@@ -135,16 +130,11 @@ HyperJumpTest >> test008WhenAShipLandsOnHyperJumpItAdvancesTheCorrectNumberOfTil
 	aShip := 'Spaceship 1'.
 	aGame := self
 		         gameWith: {
-				         self noEffect.
-				         self noEffect.
-				         self noEffect.
-				         self noEffect.
-				         (HyperJump withParsecs: { 20. 10 } converter: converter).
-				         self noEffect.
-				         self noEffect.
-				         self noEffect.
-				         self noEffect.
-				         self noEffect }
+				         self noEffectTile. self noEffectTile. self noEffectTile.
+				         self noEffectTile.
+				         (self hyperJumpTileWithParsecs: { 20. 10 } converter: converter).
+				         self noEffectTile. self noEffectTile. self noEffectTile.
+				         self noEffectTile. self noEffectTile }
 		         players: { aShip }
 		         laps: 3
 		         dice: 4.
@@ -162,23 +152,18 @@ HyperJumpTest >> test009HyperJumpAppliesParsecValuesFromHighestToLowest [
 	aShip := 'Spaceship 1'.
 	aGame := self
 		         gameWith: {
-				         self noEffect.
-				         self noEffect.
-				         self noEffect.
-				         self noEffect.
-				         (HyperJump withParsecs: { 20. 10 } converter: converter).
-				         self noEffect.
-				         self noEffect.
-				         self noEffect.
-				         self noEffect.
-				         self noEffect }
+				         self noEffectTile. self noEffectTile. self noEffectTile.
+				         self noEffectTile.
+				         (self hyperJumpTileWithParsecs: { 20. 10 } converter: converter).
+				         self noEffectTile. self noEffectTile. self noEffectTile.
+				         self noEffectTile. self noEffectTile }
 		         players: { aShip }
 		         laps: 5
 		         dice: 4.
 
 	"Primera visita: 20 parsecs → 2 tiles. De 5 queda en 7."
 	aGame playNextTurn.
-	self assert: (aGame positionOf: aShip) equals: 7.
+	self assert: (aGame positionOf: aShip) equals: 7
 ]
 
 { #category : 'tests - game logic' }
@@ -189,44 +174,60 @@ HyperJumpTest >> test010HyperJumpCyclesThroughParsecValuesAndResets [
 	aShip := 'Spaceship 1'.
 	aGame := self
 		         gameWith: {
-				         self noEffect.
-				         (HyperJump withParsecs: { 20. 10 } converter: converter).
-				         self noEffect.
-				         self noEffect.
-				         self noEffect }
+				         self noEffectTile.
+				         (self hyperJumpTileWithParsecs: { 20. 10 } converter: converter).
+				         self noEffectTile. self noEffectTile. self noEffectTile }
 		         players: { aShip }
 		         laps: 10
 		         dice: 1.
 
-	"Visita 1: de pos 1 tira 1 → pos 2 (HyperJump). 20 parsecs → 2 tiles. Queda en 4."
+	"Visita 1: pos1 tira1 → pos2 (HJ). 20 parsecs → 2 tiles. Queda en 4."
 	aGame playNextTurn.
 	self assert: (aGame positionOf: aShip) equals: 4.
-
-	"Visita 2: de pos 4 tira 1 → pos 5. NoEffect. Queda en 5."
+	"Visita 2: pos4 tira1 → pos5. NoEffect."
 	aGame playNextTurn.
 	self assert: (aGame positionOf: aShip) equals: 5.
-
-	"Visita 3: de pos 5 tira 1 → pos 1 (vuelta). NoEffect."
+	"Visita 3: pos5 tira1 → pos1 (vuelta). NoEffect."
 	aGame playNextTurn.
 	self assert: (aGame positionOf: aShip) equals: 1.
-
-	"Visita 4: de pos 1 tira 1 → pos 2 (HyperJump). Segunda vez: 10 parsecs → 1 tile. Queda en 3."
+	"Visita 4: pos1 tira1 → pos2 (HJ). Segunda vez: 10 parsecs → 1 tile. Queda en 3."
 	aGame playNextTurn.
 	self assert: (aGame positionOf: aShip) equals: 3.
-
-	"Visita 5: de pos 3 tira 1 → pos 4. NoEffect."
+	"Visita 5: pos3 tira1 → pos4. NoEffect."
 	aGame playNextTurn.
 	self assert: (aGame positionOf: aShip) equals: 4.
-
-	"Visita 6: de pos 4 tira 1 → pos 5. NoEffect."
+	"Visita 6: pos4 tira1 → pos5. NoEffect."
 	aGame playNextTurn.
 	self assert: (aGame positionOf: aShip) equals: 5.
-
-	"Visita 7: de pos 5 tira 1 → pos 1 (vuelta). NoEffect."
+	"Visita 7: pos5 tira1 → pos1 (vuelta). NoEffect."
 	aGame playNextTurn.
 	self assert: (aGame positionOf: aShip) equals: 1.
-
-	"Visita 8: de pos 1 tira 1 → pos 2 (HyperJump). Reset: vuelve a 20 parsecs → 2 tiles. Queda en 4."
+	"Visita 8: pos1 tira1 → pos2 (HJ). Reset: vuelve a 20 → 2 tiles. Queda en 4."
 	aGame playNextTurn.
 	self assert: (aGame positionOf: aShip) equals: 4
+]
+
+{ #category : 'tests - light years' }
+HyperJumpTest >> test011HyperJumpCanBeExpressedInLightYears [
+
+	| converter aShip aGame |
+	"60 años luz = 20 parsecs (1 parsec = 3 años luz). 100 parsecs / 10 tiles → 2 tiles."
+	converter := ParsecConverter withTotalParsecs: 100 numberOfTiles: 10.
+	aShip := 'Spaceship 1'.
+	aGame := self
+		         gameWith: {
+				         self noEffectTile. self noEffectTile. self noEffectTile.
+				         self noEffectTile.
+				         (Tile with: (HyperJump
+						          withDistances: { (Distance lightYears: 60) }
+						          converter: converter)).
+				         self noEffectTile. self noEffectTile. self noEffectTile.
+				         self noEffectTile. self noEffectTile }
+		         players: { aShip }
+		         laps: 3
+		         dice: 4.
+
+	"Tira 4 → pos 5 (HJ). 60 años luz = 20 parsecs → 2 tiles. Queda en 7."
+	aGame playNextTurn.
+	self assert: (aGame positionOf: aShip) equals: 7
 ]

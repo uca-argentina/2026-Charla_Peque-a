@@ -1,6 +1,6 @@
 Class {
 	#name : 'MoonWalk',
-	#superclass : 'Tile',
+	#superclass : 'Effect',
 	#instVars : [
 		'tilesBack'
 	],
@@ -17,9 +17,9 @@ MoonWalk class >> withTilesBack: aNumberOfTiles [
 ]
 
 { #category : 'applying' }
-MoonWalk >> applyOn: aGame [
+MoonWalk >> applyOn: aGame for: aSpaceship [
 
-	aGame moveAllSpaceshipsExceptCurrentBy: tilesBack negated
+	aGame moveAllSpaceshipsExcept: aSpaceship by: tilesBack negated
 ]
 
 { #category : 'initialization' }

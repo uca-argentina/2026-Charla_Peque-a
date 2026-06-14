@@ -10,7 +10,6 @@ DiceTest >> test001WhenTheDiceIsRolledANumberIsReturned [
 
 	| aDice |
 	aDice := Dice withFaces: 6.
-
 	self assert: aDice roll isNumber
 ]
 
@@ -19,7 +18,6 @@ DiceTest >> test002WhenTheDiceIsRolledAPositiveNumberIsReturned [
 
 	| aDice |
 	aDice := Dice withFaces: 6.
-
 	self assert: aDice roll strictlyPositive
 ]
 
@@ -28,7 +26,6 @@ DiceTest >> test003WhenADiceWith6FacesIsRolledThenTheResultIsBetweenOneAndSix [
 
 	| aDice |
 	aDice := Dice withFaces: 6.
-
 	self assert: (aDice roll between: 1 and: 6)
 ]
 
@@ -39,9 +36,9 @@ DiceTest >> test004WhenTheNumberOfFacesIsEqualToZeroThenTheDiceIsNotCreated [
 		should: [ Dice withFaces: 0 ]
 		raise: Error
 		withExceptionDo: [ :error |
-				self
-					assert: error messageText
-					equals: 'A dice cannot have less than three (3) faces.' ]
+			self
+				assert: error messageText
+				equals: 'A dice cannot have less than three (3) faces.' ]
 ]
 
 { #category : 'tests - instance creation' }
@@ -51,9 +48,9 @@ DiceTest >> test005WhenTheNumberOfFacesIsNegativeThenTheDiceIsNotCreated [
 		should: [ Dice withFaces: -8 ]
 		raise: Error
 		withExceptionDo: [ :error |
-				self
-					assert: error messageText
-					equals: 'A dice cannot have less than three (3) faces.' ]
+			self
+				assert: error messageText
+				equals: 'A dice cannot have less than three (3) faces.' ]
 ]
 
 { #category : 'tests - instance creation' }
@@ -63,7 +60,7 @@ DiceTest >> test006WhenTheDiceHasLessThanThreeFacesThenTheDiceIsNotCreated [
 		should: [ Dice withFaces: 2 ]
 		raise: Error
 		withExceptionDo: [ :error |
-				self
-					assert: error messageText
-					equals: 'A dice cannot have less than three (3) faces.' ]
+			self
+				assert: error messageText
+				equals: 'A dice cannot have less than three (3) faces.' ]
 ]

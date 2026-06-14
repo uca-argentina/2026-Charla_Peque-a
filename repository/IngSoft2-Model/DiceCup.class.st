@@ -19,7 +19,7 @@ DiceCup class >> withDice: aCollectionOfDice [
 { #category : 'initialization' }
 DiceCup >> initializeWithDice: aCollectionOfDice [
 
-	dice := aCollectionOfDice
+	dice := aCollectionOfDice asOrderedCollection copy
 ]
 
 { #category : 'game logic' }

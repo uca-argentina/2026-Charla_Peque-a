@@ -5,12 +5,6 @@ Class {
 	#package : 'IngSoft2-Tests'
 }
 
-{ #category : 'helpers' }
-PositionTest >> boardWithTiles: n [
-
-	^ Board withTiles: ((1 to: n) collect: [ :i | NoEffect new ])
-]
-
 { #category : 'tests - instance creation' }
 PositionTest >> test001WhenCreatingAPositionWithValidParametersThenItIsCreated [
 
@@ -27,9 +21,9 @@ PositionTest >> test002WhenCreatingAPositionWithTileLessThanOneThenItCannotBeCre
 		should: [ Position at: 0 withLaps: 1 ]
 		raise: Error
 		withExceptionDo: [ :error |
-				self
-					assert: error messageText
-					equals: 'Starting position cannot be less than one.' ]
+			self
+				assert: error messageText
+				equals: 'Starting position cannot be less than one.' ]
 ]
 
 { #category : 'tests - instance creation' }
@@ -39,19 +33,17 @@ PositionTest >> test003WhenCreatingAPositionWithLapsLessThanOneThenItCannotBeCre
 		should: [ Position at: 1 withLaps: 0 ]
 		raise: Error
 		withExceptionDo: [ :error |
-				self
-					assert: error messageText
-					equals: 'Number of Laps cannot be less than one.' ]
+			self
+				assert: error messageText
+				equals: 'Number of Laps cannot be less than one.' ]
 ]
 
 { #category : 'tests - moving forward' }
 PositionTest >> test004WhenAPositionMovesForwardWithinTheSameLapThenItAdvancesCorrectly [
 
-	| board position newPosition |
-	board := self boardWithTiles: 10.
+	| position newPosition |
 	position := Position at: 3 withLaps: 1.
-	newPosition := position moveBy: 4 withNumberOfTiles: board numberOfTiles.
-
+	newPosition := position moveBy: 4 withNumberOfTiles: 10.
 	self assert: newPosition tile equals: 7.
 	self assert: newPosition laps equals: 1
 ]
@@ -59,11 +51,9 @@ PositionTest >> test004WhenAPositionMovesForwardWithinTheSameLapThenItAdvancesCo
 { #category : 'tests - moving forward' }
 PositionTest >> test005WhenAPositionMovesForwardToExactlyTheLastTileThenItStaysInTheSameLap [
 
-	| board position newPosition |
-	board := self boardWithTiles: 10.
+	| position newPosition |
 	position := Position at: 5 withLaps: 1.
-	newPosition := position moveBy: 5 withNumberOfTiles: board numberOfTiles.
-
+	newPosition := position moveBy: 5 withNumberOfTiles: 10.
 	self assert: newPosition tile equals: 10.
 	self assert: newPosition laps equals: 1
 ]
@@ -71,10 +61,9 @@ PositionTest >> test005WhenAPositionMovesForwardToExactlyTheLastTileThenItStaysI
 { #category : 'tests - moving forward' }
 PositionTest >> test006WhenAPositionMovesForwardBeyondTheLastTileThenItWrapsAroundAndIncrementsLap [
 
-	| board position newPosition |
-	board := self boardWithTiles: 10.
+	| position newPosition |
 	position := Position at: 8 withLaps: 1.
-	newPosition := position moveBy: 5 withNumberOfTiles: board numberOfTiles.
+	newPosition := position moveBy: 5 withNumberOfTiles: 10.
 	self assert: newPosition tile equals: 3.
 	self assert: newPosition laps equals: 2
 ]
@@ -82,11 +71,9 @@ PositionTest >> test006WhenAPositionMovesForwardBeyondTheLastTileThenItWrapsArou
 { #category : 'tests - moving forward' }
 PositionTest >> test007WhenAPositionMovesForwardExactlyOneLapThenItReturnsToFirstTileAndIncrementsLap [
 
-	| board position newPosition |
-	board := self boardWithTiles: 5.
+	| position newPosition |
 	position := Position at: 1 withLaps: 1.
-	newPosition := position moveBy: 5 withNumberOfTiles: board numberOfTiles.
-
+	newPosition := position moveBy: 5 withNumberOfTiles: 5.
 	self assert: newPosition tile equals: 1.
 	self assert: newPosition laps equals: 2
 ]
@@ -94,11 +81,9 @@ PositionTest >> test007WhenAPositionMovesForwardExactlyOneLapThenItReturnsToFirs
 { #category : 'tests - moving forward' }
 PositionTest >> test008WhenAPositionMovesForwardMultipleLapsThenItIncrementsLapCorrectly [
 
-	| board position newPosition |
-	board := self boardWithTiles: 5.
+	| position newPosition |
 	position := Position at: 3 withLaps: 1.
-	newPosition := position moveBy: 12 withNumberOfTiles: board numberOfTiles.
-
+	newPosition := position moveBy: 12 withNumberOfTiles: 5.
 	self assert: newPosition tile equals: 5.
 	self assert: newPosition laps equals: 3
 ]
@@ -106,11 +91,9 @@ PositionTest >> test008WhenAPositionMovesForwardMultipleLapsThenItIncrementsLapC
 { #category : 'tests - moving backward' }
 PositionTest >> test009WhenAPositionMovesBackwardWithinTheSameLapThenItRetreatsCorrectly [
 
-	| board position newPosition |
-	board := self boardWithTiles: 10.
+	| position newPosition |
 	position := Position at: 7 withLaps: 2.
-	newPosition := position moveBy: -3 withNumberOfTiles: board numberOfTiles.
-
+	newPosition := position moveBy: -3 withNumberOfTiles: 10.
 	self assert: newPosition tile equals: 4.
 	self assert: newPosition laps equals: 2
 ]
@@ -118,11 +101,9 @@ PositionTest >> test009WhenAPositionMovesBackwardWithinTheSameLapThenItRetreatsC
 { #category : 'tests - moving backward' }
 PositionTest >> test010WhenAPositionMovesBackwardToExactlyTheFirstTileThenItStaysInTheSameLap [
 
-	| board position newPosition |
-	board := self boardWithTiles: 10.
+	| position newPosition |
 	position := Position at: 5 withLaps: 2.
-	newPosition := position moveBy: -4 withNumberOfTiles: board numberOfTiles.
-
+	newPosition := position moveBy: -4 withNumberOfTiles: 10.
 	self assert: newPosition tile equals: 1.
 	self assert: newPosition laps equals: 2
 ]
@@ -130,10 +111,9 @@ PositionTest >> test010WhenAPositionMovesBackwardToExactlyTheFirstTileThenItStay
 { #category : 'tests - moving backward' }
 PositionTest >> test011WhenAPositionMovesBackwardBeyondTheFirstTileThenItWrapsAroundAndDecrementsLap [
 
-	| board position newPosition |
-	board := self boardWithTiles: 10.
+	| position newPosition |
 	position := Position at: 3 withLaps: 2.
-	newPosition := position moveBy: -5 withNumberOfTiles: board numberOfTiles.
+	newPosition := position moveBy: -5 withNumberOfTiles: 10.
 	self assert: newPosition tile equals: 8.
 	self assert: newPosition laps equals: 1
 ]
@@ -141,11 +121,9 @@ PositionTest >> test011WhenAPositionMovesBackwardBeyondTheFirstTileThenItWrapsAr
 { #category : 'tests - moving backward' }
 PositionTest >> test012WhenAPositionMovesBackwardExactlyOneLapThenItGoesToLastTileOfPreviousLap [
 
-	| board position newPosition |
-	board := self boardWithTiles: 5.
+	| position newPosition |
 	position := Position at: 1 withLaps: 3.
-	newPosition := position moveBy: -5 withNumberOfTiles: board numberOfTiles.
-
+	newPosition := position moveBy: -5 withNumberOfTiles: 5.
 	self assert: newPosition tile equals: 1.
 	self assert: newPosition laps equals: 2
 ]
@@ -153,10 +131,9 @@ PositionTest >> test012WhenAPositionMovesBackwardExactlyOneLapThenItGoesToLastTi
 { #category : 'tests - moving backward' }
 PositionTest >> test013WhenAPositionMovesBackwardMultipleLapsThenItDecrementsLapCorrectly [
 
-	| board position newPosition |
-	board := self boardWithTiles: 5.
+	| position newPosition |
 	position := Position at: 2 withLaps: 5.
-	newPosition := position moveBy: -12 withNumberOfTiles: board numberOfTiles.
+	newPosition := position moveBy: -12 withNumberOfTiles: 5.
 	self assert: newPosition tile equals: 5.
 	self assert: newPosition laps equals: 2
 ]
@@ -164,10 +141,9 @@ PositionTest >> test013WhenAPositionMovesBackwardMultipleLapsThenItDecrementsLap
 { #category : 'tests - clamping' }
 PositionTest >> test014WhenAPositionMovesBackwardBeforeTheStartThenItClampsToFirstTileAndFirstLap [
 
-	| board position newPosition |
-	board := self boardWithTiles: 10.
+	| position newPosition |
 	position := Position at: 3 withLaps: 1.
-	newPosition := position moveBy: -10 withNumberOfTiles: board numberOfTiles.
+	newPosition := position moveBy: -10 withNumberOfTiles: 10.
 	self assert: newPosition tile equals: 1.
 	self assert: newPosition laps equals: 1
 ]
@@ -175,11 +151,39 @@ PositionTest >> test014WhenAPositionMovesBackwardBeforeTheStartThenItClampsToFir
 { #category : 'tests - clamping' }
 PositionTest >> test015WhenAPositionMovesBackwardManyLapsBeforeTheStartThenItClampsToFirstTileAndFirstLap [
 
-	| board position newPosition |
-	board := self boardWithTiles: 5.
+	| position newPosition |
 	position := Position at: 2 withLaps: 2.
-	newPosition := position moveBy: -50 withNumberOfTiles: board numberOfTiles.
-
+	newPosition := position moveBy: -50 withNumberOfTiles: 5.
 	self assert: newPosition tile equals: 1.
 	self assert: newPosition laps equals: 1
+]
+
+{ #category : 'tests - comparing' }
+PositionTest >> test016WhenAPositionHasMoreLapsThenItIsAheadOfAnotherWithFewerLaps [
+
+	| ahead behind |
+	ahead := Position at: 1 withLaps: 3.
+	behind := Position at: 9 withLaps: 2.
+	self assert: (ahead isAheadOf: behind).
+	self deny: (behind isAheadOf: ahead)
+]
+
+{ #category : 'tests - comparing' }
+PositionTest >> test017WhenTwoPositionsShareLapsThenTheOneOnAFurtherTileIsAhead [
+
+	| ahead behind |
+	ahead := Position at: 7 withLaps: 2.
+	behind := Position at: 4 withLaps: 2.
+	self assert: (ahead isAheadOf: behind).
+	self deny: (behind isAheadOf: ahead)
+]
+
+{ #category : 'tests - comparing' }
+PositionTest >> test018WhenTwoPositionsAreEqualThenNeitherIsAheadOfTheOther [
+
+	| onePosition anotherPosition |
+	onePosition := Position at: 5 withLaps: 2.
+	anotherPosition := Position at: 5 withLaps: 2.
+	self deny: (onePosition isAheadOf: anotherPosition).
+	self deny: (anotherPosition isAheadOf: onePosition)
 ]

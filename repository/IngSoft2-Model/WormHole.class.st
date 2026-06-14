@@ -1,12 +1,12 @@
 Class {
 	#name : 'WormHole',
-	#superclass : 'Tile',
+	#superclass : 'Effect',
 	#category : 'IngSoft2-Model',
 	#package : 'IngSoft2-Model'
 }
 
 { #category : 'applying' }
-WormHole >> applyOn: aGame [
+WormHole >> applyOn: aGame for: aSpaceship [
 
-	aGame moveSpaceship: aGame currentPlayer by: -4
+	aGame moveSpaceship: aSpaceship by: -4
 ]
