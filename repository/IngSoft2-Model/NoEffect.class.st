@@ -1,12 +1,18 @@
 Class {
 	#name : 'NoEffect',
-	#superclass : 'Tile',
+	#superclass : 'Effect',
 	#category : 'IngSoft2-Model',
 	#package : 'IngSoft2-Model'
 }
 
 { #category : 'applying' }
-NoEffect >> applyOn: aGame [
+NoEffect >> applyOn: aGame for: aSpaceship [
 
 	^ self
+]
+
+{ #category : 'testing' }
+NoEffect >> isRepeatable [
+
+	^ false
 ]

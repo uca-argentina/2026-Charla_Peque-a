@@ -6,22 +6,29 @@ Class {
 }
 
 { #category : 'helpers' }
-BoardFactoryTest >> countTiles: aBoard ofClass: aClass [
+BoardFactoryTest >> allTilesOf: aBoard areOfClass: anEffectClass [
 
-	| count |
-	count := 0.
-	1 to: aBoard numberOfTiles do: [ :i |
-		((aBoard tileAt: i) isKindOf: aClass) ifTrue: [ count := count + 1 ] ].
-	^ count
+	^ (1 to: aBoard numberOfTiles) allSatisfy: [ :i |
+		  (aBoard effectAt: i) class = anEffectClass ]
 ]
 
 { #category : 'helpers' }
-BoardFactoryTest >> factoryWithTiles: n [
+BoardFactoryTest >> factoryWithTiles: n allOf: anEffectBlock [
+
+	| distribution |
+	distribution := EffectDistribution new
+		                probability: 100
+		                of: anEffectBlock.
+	^ BoardFactory withTiles: n distribution: distribution
+]
+
+{ #category : 'helpers' }
+BoardFactoryTest >> standardFactoryWithTiles: n [
 
 	^ BoardFactory
 		  withTiles: n
 		  totalParsecs: 1000
-		  moonWalkRange: #( 1 to: 5 )
+		  moonWalkRange: #( 1 2 3 4 5 )
 		  hyperJumpParsecs: #( 100 200 300 )
 ]
 
@@ -33,7 +40,7 @@ BoardFactoryTest >> test001WhenTheNumberOfTilesIsZeroThenTheFactoryCannotBeCreat
 				BoardFactory
 					withTiles: 0
 					totalParsecs: 1000
-					moonWalkRange: #(1 to: 5)
+					moonWalkRange: #( 1 2 3 4 5 )
 					hyperJumpParsecs: #( 100 ) ]
 		raise: Error
 		withExceptionDo: [ :error |
@@ -50,7 +57,7 @@ BoardFactoryTest >> test002WhenParsecsAreNonPositiveThenAFactoryCannotBeCreated 
 				BoardFactory
 					withTiles: 10
 					totalParsecs: 0
-					moonWalkRange: #(1 to: 5)
+					moonWalkRange: #( 1 2 3 4 5 )
 					hyperJumpParsecs: #( 100 ) ]
 		raise: Error
 		withExceptionDo: [ :error |
@@ -84,7 +91,7 @@ BoardFactoryTest >> test004WhenMoonWalkMinIsLessThanOneThenTheFactoryCannotBeCre
 				BoardFactory
 					withTiles: 10
 					totalParsecs: 1000
-					moonWalkRange: #(0 to: 5)
+					moonWalkRange: #( 0 1 2 3 4 5 )
 					hyperJumpParsecs: #( 100 ) ]
 		raise: Error
 		withExceptionDo: [ :error |
@@ -101,7 +108,7 @@ BoardFactoryTest >> test005WhenMoonWalkMaxIsLessThanMinThenTheFactoryCannotBeCre
 				BoardFactory
 					withTiles: 10
 					totalParsecs: 1000
-					moonWalkRange: #(5 to: 2)
+					moonWalkRange: #( 5 2 )
 					hyperJumpParsecs: #( 100 ) ]
 		raise: Error
 		withExceptionDo: [ :error |
@@ -118,7 +125,7 @@ BoardFactoryTest >> test006WhenHyperJumpParsecsListIsEmptyThenTheFactoryCannotBe
 				BoardFactory
 					withTiles: 10
 					totalParsecs: 1000
-					moonWalkRange: (1 to: 5)
+					moonWalkRange: #( 1 2 3 4 5 )
 					hyperJumpParsecs: #(  ) ]
 		raise: Error
 		withExceptionDo: [ :error |
@@ -130,181 +137,171 @@ BoardFactoryTest >> test006WhenHyperJumpParsecsListIsEmptyThenTheFactoryCannotBe
 { #category : 'tests - board properties' }
 BoardFactoryTest >> test007WhenAFactoryBuildsABoardThenItHasTheRequestedNumberOfTiles [
 
-	| factory board |
-	factory := self factoryWithTiles: 100.
-	board := factory build.
+	| board |
+	board := (self standardFactoryWithTiles: 100) build.
 	self assert: board numberOfTiles equals: 100
 ]
 
 { #category : 'tests - board properties' }
-BoardFactoryTest >> test008WhenAFactoryBuildsABoardThenAllTilesAreTileInstances [
+BoardFactoryTest >> test008WhenAFactoryBuildsABoardThenAllItsTilesAreTiles [
 
-	| factory board allTiles |
-	factory := self factoryWithTiles: 50.
-	board := factory build.
-	allTiles := (1 to: board numberOfTiles) collect: [ :i |
-		            board tileAt: i ].
-	self assert: (allTiles allSatisfy: [ :each | each isKindOf: Tile ])
+	| board allAreTiles |
+	board := (self standardFactoryWithTiles: 50) build.
+	allAreTiles := (1 to: board numberOfTiles) allSatisfy: [ :i |
+		               (board tileAt: i) class = Tile ].
+	self assert: allAreTiles
 ]
 
-{ #category : 'tests - probabilistic distribution' }
-BoardFactoryTest >> test009WhenBuildingManyBoardsThenNoEffectAppearsInApproximately40Percent [
+{ #category : 'tests - distribution by configuration' }
+BoardFactoryTest >> test009ADistributionOfAllNoEffectFillsTheBoardWithNoEffect [
 
-	| factory counts totalNoEffect percentage |
-	factory := self factoryWithTiles: 100.
-	counts := (1 to: 500) collect: [ :i |
-			          | board |
-			          board := factory build.
-			          self countTiles: board ofClass: NoEffect ].
-
-	totalNoEffect := counts sum.
-	percentage := totalNoEffect / 50000.0 * 100.
-
-	self assert: (percentage between: 38 and: 42)
+	| board |
+	board := (self factoryWithTiles: 20 allOf: [ NoEffect new ]) build.
+	self assert: (self allTilesOf: board areOfClass: NoEffect)
 ]
 
-{ #category : 'tests - probabilistic distribution' }
-BoardFactoryTest >> test010WhenBuildingManyBoardsThenWormHoleAppearsInApproximately20Percent [
+{ #category : 'tests - distribution by configuration' }
+BoardFactoryTest >> test010ADistributionOfAllWormHoleFillsTheBoardWithWormHole [
 
-	| factory counts totalWormHole percentage |
-	factory := self factoryWithTiles: 100.
-	counts := (1 to: 500) collect: [ :i |
-			          | board |
-			          board := factory build.
-			          self countTiles: board ofClass: WormHole ].
-
-	totalWormHole := counts sum.
-	percentage := totalWormHole / 50000.0 * 100.
-	self assert: (percentage between: 18 and: 22)
+	| board |
+	board := (self factoryWithTiles: 20 allOf: [ WormHole new ]) build.
+	self assert: (self allTilesOf: board areOfClass: WormHole)
 ]
 
-{ #category : 'tests - probabilistic distribution' }
-BoardFactoryTest >> test011WhenBuildingManyBoardsThenSpeedUpAppearsInApproximately20Percent [
+{ #category : 'tests - distribution by configuration' }
+BoardFactoryTest >> test011ADistributionOfAllSpeedUpFillsTheBoardWithSpeedUp [
 
-	| factory counts totalSpeedUp percentage |
-	factory := self factoryWithTiles: 100.
-	counts := (1 to: 500) collect: [ :i |
-			          | board |
-			          board := factory build.
-			          self countTiles: board ofClass: SpeedUp ].
-
-	totalSpeedUp := counts sum.
-	percentage := totalSpeedUp / 50000.0 * 100.
-
-	self assert: (percentage between: 18 and: 22)
+	| board |
+	board := (self factoryWithTiles: 20 allOf: [ SpeedUp new ]) build.
+	self assert: (self allTilesOf: board areOfClass: SpeedUp)
 ]
 
-{ #category : 'tests - probabilistic distribution' }
-BoardFactoryTest >> test012WhenBuildingManyBoardsThenMoonWalkAppearsInApproximately10Percent [
+{ #category : 'tests - distribution by configuration' }
+BoardFactoryTest >> test012ADistributionOfAllMoonWalkFillsTheBoardWithMoonWalk [
 
-	| factory counts totalMoonWalk percentage |
-	factory := self factoryWithTiles: 100.
-	counts := (1 to: 500) collect: [ :i |
-			          | board |
-			          board := factory build.
-			          self countTiles: board ofClass: MoonWalk ].
-
-	totalMoonWalk := counts sum.
-	percentage := totalMoonWalk / 50000.0 * 100.
-
-	self assert: (percentage between: 8 and: 12)
+	| board |
+	board := (self
+		          factoryWithTiles: 20
+		          allOf: [ MoonWalk withTilesBack: 2 ]) build.
+	self assert: (self allTilesOf: board areOfClass: MoonWalk)
 ]
 
-{ #category : 'tests - probabilistic distribution' }
-BoardFactoryTest >> test013WhenBuildingManyBoardsThenHyperJumpAppearsInApproximately8Percent [
+{ #category : 'tests - distribution by configuration' }
+BoardFactoryTest >> test013ADistributionOfAllAtomicBombFillsTheBoardWithAtomicBomb [
 
-	| factory counts totalHyperJump percentage |
-	factory := self factoryWithTiles: 100.
-	counts := (1 to: 500) collect: [ :i |
-			          | board |
-			          board := factory build.
-			          self countTiles: board ofClass: HyperJump ].
-
-	totalHyperJump := counts sum.
-	percentage := totalHyperJump / 50000.0 * 100.
-
-	self assert: (percentage between: 6 and: 10)
+	| board |
+	board := (self factoryWithTiles: 20 allOf: [ AtomicBomb new ]) build.
+	self assert: (self allTilesOf: board areOfClass: AtomicBomb)
 ]
 
-{ #category : 'tests - probabilistic distribution' }
-BoardFactoryTest >> test014WhenBuildingManyBoardsThenAtomicBombAppearsInApproximately2Percent [
+{ #category : 'tests - distribution by configuration' }
+BoardFactoryTest >> test014ADistributionOfAllGiveCardFillsTheBoardWithGiveCard [
 
-	| factory counts totalAtomicBomb percentage |
-	factory := self factoryWithTiles: 100.
-	counts := (1 to: 500) collect: [ :i |
-			          | board |
-			          board := factory build.
-			          self countTiles: board ofClass: AtomicBomb ].
+	| board |
+	board := (self factoryWithTiles: 20 allOf: [ GiveCard new ]) build.
+	self assert: (self allTilesOf: board areOfClass: GiveCard)
+]
 
-	totalAtomicBomb := counts sum.
-	percentage := totalAtomicBomb / 50000.0 * 100.
-	self assert: (percentage between: 0 and: 4)
+{ #category : 'tests - distribution by configuration' }
+BoardFactoryTest >> test015ACustomDistributionCanMixEffectsWithChosenProbabilities [
+
+	| board distribution source noEffectCount speedUpCount |
+	source := SequencedRandomSource withValues: { 1. 51. 1. 51 }.
+	distribution := EffectDistribution withRandomSource: source.
+	distribution
+		probability: 50 of: [ NoEffect new ];
+		probability: 50 of: [ SpeedUp new ].
+	board := (BoardFactory withTiles: 4 distribution: distribution) build.
+	noEffectCount := (1 to: 4) count: [ :i |
+		                 (board effectAt: i) class = NoEffect ].
+	speedUpCount := (1 to: 4) count: [ :i |
+		                (board effectAt: i) class = SpeedUp ].
+	self assert: noEffectCount equals: 2.
+	self assert: speedUpCount equals: 2
+]
+
+{ #category : 'tests - moonwalk range' }
+BoardFactoryTest >> test016WhenAMoonWalkBlockUsesAFixedValueThenEveryMoonWalkHasThatValue [
+
+	| board moonWalk |
+	board := (self
+		          factoryWithTiles: 5
+		          allOf: [ MoonWalk withTilesBack: 3 ]) build.
+	moonWalk := board effectAt: 1.
+	self assert: moonWalk class equals: MoonWalk.
+	self assert: moonWalk tilesBack equals: 3
+]
+
+{ #category : 'tests - moonwalk range' }
+BoardFactoryTest >> test017WhenAMoonWalkBlockClosesOverASourceThenTheValueComesFromIt [
+
+	| board moonWalk source distribution |
+	source := SequencedRandomSource withValues: { 4 }.
+	distribution := EffectDistribution new
+		                probability: 100
+		                of: [ MoonWalk withTilesBack: (source nextInt: 10) ].
+	board := (BoardFactory withTiles: 1 distribution: distribution) build.
+	moonWalk := board effectAt: 1.
+	self assert: moonWalk tilesBack equals: 4
 ]
 
 { #category : 'tests - edge cases' }
-BoardFactoryTest >> test015WhenBuildingASingleTileBoardThenItCanBeAnyTileType [
+BoardFactoryTest >> test018WhenBuildingASingleTileBoardThenItsTileIsATile [
 
-	| factory board tile |
-	factory := self factoryWithTiles: 1.
-	board := factory build.
+	| board tile |
+	board := (self standardFactoryWithTiles: 1) build.
 	tile := board tileAt: 1.
-	self assert: (tile isKindOf: Tile)
+	self assert: tile class equals: Tile
 ]
 
-{ #category : 'tests - moonwalk range' }
-BoardFactoryTest >> test016WhenMoonWalkRangeIsFixedThenAllMoonWalksHaveTheSameValue [
+{ #category : 'tests - instance creation' }
+BoardFactoryTest >> test019WhenTheDistributionIsNilThenTheFactoryCannotBeCreated [
 
-	| factory boards moonWalks |
-	factory := BoardFactory
-		           withTiles: 100
-		           totalParsecs: 1000
-		           moonWalkRange: #(3 to: 3)
-		           hyperJumpParsecs: #( 100 ).
-	boards := (1 to: 10) collect: [ :i | factory build ].
-	moonWalks := boards flatCollect: [ :board |
-			             (1 to: board numberOfTiles)
-				             collect: [ :i | board tileAt: i ]
-				             thenSelect: [ :tile | tile isKindOf: MoonWalk ] ].
-
-	self deny: moonWalks isEmpty.
-	moonWalks do: [ :mw | self assert: mw tilesBack equals: 3 ]
+	self
+		should: [ BoardFactory withTiles: 10 distribution: nil ]
+		raise: Error
+		withExceptionDo: [ :error |
+				self
+					assert: error messageText
+					equals: 'A board factory must have an effect distribution.' ]
 ]
 
-{ #category : 'tests - moonwalk range' }
-BoardFactoryTest >> test017WhenMoonWalkRangeIsWideThenDifferentMoonWalksCanHaveDifferentValues [
+{ #category : 'tests - configurable distribution' }
+BoardFactoryTest >> test020WhenADistributionIsAllOfOneEffectThenEveryTileIsThatEffect [
 
-	| factory boards moonWalks distinctValues |
-	factory := BoardFactory
-		           withTiles: 100
-		           totalParsecs: 1000
-		           moonWalkRange: #(1 to: 10)
-		           hyperJumpParsecs: #( 100 ).
-
-	boards := (1 to: 20) collect: [ :i | factory build ].
-	moonWalks := boards flatCollect: [ :board |
-			             (1 to: board numberOfTiles)
-				             collect: [ :i | board tileAt: i ]
-				             thenSelect: [ :tile | tile isKindOf: MoonWalk ] ].
-
-	distinctValues := (moonWalks collect: [ :mw | mw tilesBack ]) asSet.
-	self assert: distinctValues size > 3
+	| board distribution |
+	distribution := EffectDistribution new
+		                probability: 100
+		                of: [ WormHole new ].
+	board := (BoardFactory withTiles: 30 distribution: distribution)
+		         build.
+	self assert: (self allTilesOf: board areOfClass: WormHole)
 ]
 
-{ #category : 'tests - moonwalk range' }
-BoardFactoryTest >> test018WhenMoonWalkRangeIsAnArrayThenItWorksCorrectly [
+{ #category : 'tests - configurable distribution' }
+BoardFactoryTest >> test021WhenADistributionMixesTwoEffectsThenAControlledSourceProducesBoth [
 
-	| factory boards moonWalks |
-	factory := BoardFactory
-		           withTiles: 100
-		           totalParsecs: 1000
-		           moonWalkRange: #( 2 )
-		           hyperJumpParsecs: #( 100 ).
+	| board distribution source |
+	source := SequencedRandomSource withValues: { 10. 90. 10. 90 }.
+	distribution := EffectDistribution withRandomSource: source.
+	distribution
+		probability: 50 of: [ NoEffect new ];
+		probability: 50 of: [ AtomicBomb new ].
+	board := (BoardFactory withTiles: 4 distribution: distribution) build.
+	self assert: (board effectAt: 1) class equals: NoEffect.
+	self assert: (board effectAt: 2) class equals: AtomicBomb.
+	self assert: (board effectAt: 3) class equals: NoEffect.
+	self assert: (board effectAt: 4) class equals: AtomicBomb
+]
 
-	boards := (1 to: 10) collect: [ :i | factory build ].
-	moonWalks := boards flatCollect: [ :board |
-			             (1 to: board numberOfTiles)
-				             collect: [ :i | board tileAt: i ]
-				             thenSelect: [ :tile | tile isKindOf: MoonWalk ] ].
-	self deny: moonWalks isEmpty.
-	moonWalks do: [ :mw | self assert: mw tilesBack equals: 2 ]
+{ #category : 'tests - configurable distribution' }
+BoardFactoryTest >> test022WhenADistributionGivesAnEffectZeroPercentThenItNeverAppears [
+
+	| board distribution |
+	distribution := EffectDistribution new
+		                probability: 100 of: [ SpeedUp new ];
+		                probability: 0 of: [ AtomicBomb new ].
+	board := (BoardFactory withTiles: 25 distribution: distribution)
+		         build.
+	self assert: (self allTilesOf: board areOfClass: SpeedUp)
 ]

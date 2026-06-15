@@ -1,12 +1,12 @@
 Class {
-	#name : 'SpeedUp',
+	#name : 'GiveCard',
 	#superclass : 'Effect',
 	#category : 'IngSoft2-Model',
 	#package : 'IngSoft2-Model'
 }
 
 { #category : 'applying' }
-SpeedUp >> applyOn: aGame for: aSpaceship [
+GiveCard >> applyOn: aGame for: aSpaceship [
 
-	aGame moveSpaceship: aSpaceship by: 4
+	aGame giveCardTo: aSpaceship
 ]

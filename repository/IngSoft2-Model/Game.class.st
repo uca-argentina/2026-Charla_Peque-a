@@ -3,12 +3,12 @@ Class {
 	#superclass : 'Object',
 	#instVars : [
 		'players',
-		'winner',
 		'diceCup',
 		'currentPlayerIndex',
-		'positions',
-		'lapsToReach',
-		'board'
+		'board',
+		'tracker',
+		'history',
+		'cardManager'
 	],
 	#category : 'IngSoft2-Model',
 	#package : 'IngSoft2-Model'
@@ -17,131 +17,206 @@ Class {
 { #category : 'instance creation' }
 Game class >> playedBy: aSpaceshipCollection reachingLaps: aNumberOfLaps withBoard: aBoard andDiceCup: aDiceCup [
 
+	^ self
+		  playedBy: aSpaceshipCollection
+		  reachingLaps: aNumberOfLaps
+		  withBoard: aBoard
+		  andDiceCup: aDiceCup
+		  withDeck: RandomDeck new
+]
+
+{ #category : 'instance creation' }
+Game class >> playedBy: aSpaceshipCollection reachingLaps: aNumberOfLaps withBoard: aBoard andDiceCup: aDiceCup withDeck: aDeck [
+
 	aSpaceshipCollection isEmpty ifTrue: [
 		Error signal: 'A game must have at least one player.' ].
-
 	aNumberOfLaps < 1 ifTrue: [
 		Error signal: 'The game must reach at least one lap' ].
-
 	aBoard ifNil: [ Error signal: 'A game must have a board' ].
-
 	aDiceCup ifNil: [ Error signal: 'A game must have a dice cup.' ].
+	aDeck ifNil: [ Error signal: 'A game must have a deck.' ].
 	^ self new
 		  initializeWithPlayers: aSpaceshipCollection
 		  reachingLaps: aNumberOfLaps
 		  board: aBoard
 		  diceCup: aDiceCup
+		  deck: aDeck
 ]
 
-{ #category : 'game logic' }
+{ #category : 'card callbacks' }
+Game >> activatePermanent: aPermanentCard [
+
+	cardManager activatePermanent: aPermanentCard
+]
+
+{ #category : 'public api' }
+Game >> activePermanents [
+
+	^ cardManager activePermanents
+]
+
+{ #category : 'private' }
 Game >> advanceToNextPlayer [
 
 	currentPlayerIndex := currentPlayerIndex \\ players size + 1
 ]
 
 { #category : 'private' }
-Game >> checkWinner: aSpaceship [
+Game >> applyBoardEffect: anEffect for: aSpaceship [
 
-	(positions at: aSpaceship) laps > lapsToReach ifTrue: [
-		winner := aSpaceship ]
+	anEffect applyOn: self for: aSpaceship.
+	history recordBoardEffect: anEffect for: aSpaceship
 ]
 
-{ #category : 'accessing' }
+{ #category : 'private' }
+Game >> applyTileEffectFor: aSpaceship [
+
+	| tile appliedEffect |
+	tile := board tileFor: (self positionOf: aSpaceship).
+	appliedEffect := tile applyOn: self for: aSpaceship.
+	history recordBoardEffect: appliedEffect for: aSpaceship
+]
+
+{ #category : 'card callbacks' }
+Game >> cancelPermanent: aPermanentCard [
+
+	cardManager cancelPermanent: aPermanentCard
+]
+
+{ #category : 'public api' }
 Game >> currentPlayer [
 
 	^ players at: currentPlayerIndex
 ]
 
-{ #category : 'testing' }
+{ #category : 'private' }
+Game >> effectiveRollFor: aSpaceship [
+
+	^ diceCup roll + (cardManager totalModifierFor: aSpaceship)
+]
+
+{ #category : 'effect callbacks' }
+Game >> giveCardTo: aSpaceship [
+
+	cardManager giveCardTo: aSpaceship
+]
+
+{ #category : 'public api' }
+Game >> handOf: aSpaceship [
+
+	^ cardManager handOf: aSpaceship
+]
+
+{ #category : 'public api' }
 Game >> hasFinished [
 
-	^ winner notNil
+	^ tracker hasWinner
 ]
 
 { #category : 'initialization' }
-Game >> initializeWithPlayers: aSpaceshipCollection reachingLaps: aNumberOfLaps board: aBoard diceCup: aDiceCup [
+Game >> initializeWithPlayers: aSpaceshipCollection reachingLaps: aNumberOfLaps board: aBoard diceCup: aDiceCup deck: aDeck [
 
-	players := aSpaceshipCollection.
-	lapsToReach := aNumberOfLaps.
+	players := aSpaceshipCollection asOrderedCollection copy.
 	currentPlayerIndex := 1.
 	diceCup := aDiceCup.
-	winner := nil.
-	positions := Dictionary new.
-	players do: [ :aShip |
-		positions at: aShip put: (Position at: 1 withLaps: 1) ].
 	board := aBoard.
+	tracker := SpaceshipTracker
+		           withShips: players
+		           numberOfTiles: aBoard numberOfTiles
+		           reachingLaps: aNumberOfLaps.
+	history := GameHistory new.
+	cardManager := CardManager withShips: players deck: aDeck
 ]
 
-{ #category : 'accessing' }
+{ #category : 'public api' }
 Game >> lapOf: aSpaceship [
 
-	^ (positions at: aSpaceship) laps
+	^ tracker lapOf: aSpaceship
 ]
 
-{ #category : 'game logic' }
-Game >> moveAllSpaceshipsExceptCurrentBy: aNumberOfSteps [
+{ #category : 'effect callbacks' }
+Game >> moveAllSpaceshipsExcept: aSpaceship by: aNumberOfSteps [
 
-	players do: [ :each |
-			each = self currentPlayer ifFalse: [
-				self moveSpaceship: each by: aNumberOfSteps ] ]
+	tracker moveAllExcept: aSpaceship by: aNumberOfSteps
 ]
 
-{ #category : 'game logic' }
-Game >> moveCurrentPlayerByRolling: aNumberOfSteps [
+{ #category : 'effect callbacks' }
+Game >> moveSpaceship: aSpaceship by: aNumberOfSteps [
 
+	tracker move: aSpaceship by: aNumberOfSteps
+]
+
+{ #category : 'public api' }
+Game >> play: aCard by: aSpaceship target: aTarget [
+
+	self hasFinished ifTrue: [
+		Error signal: 'Cannot play a card once the game has finished.' ].
+
+	(cardManager hand: aSpaceship includes: aCard) ifFalse: [
+		Error signal: 'A ship can only play a card from its own hand.' ].
+
+	(aCard isPermanent and: [ aSpaceship ~= self currentPlayer ])
+		ifTrue: [
+			Error signal:
+				'A permanent card can only be played on the owner turn.' ].
+
+	cardManager removeFromHand: aCard of: aSpaceship.
+	aCard playOn: self by: aSpaceship target: aTarget.
+	history recordResolvedCard: aCard
+]
+
+{ #category : 'public api' }
+Game >> playNextTurn [
+
+	| effectiveRoll |
 	self hasFinished ifTrue: [
 		Error signal: 'The game has already finished.' ].
 
-	self moveSpaceship: self currentPlayer by: aNumberOfSteps.
+	effectiveRoll := self effectiveRollFor: self currentPlayer.
+	self moveSpaceship: self currentPlayer by: effectiveRoll.
 
 	self hasFinished ifFalse: [
-		board applyEffectFor: self currentPlayer on: self ]
-]
+		self applyTileEffectFor: self currentPlayer ].
 
-{ #category : 'game logic' }
-Game >> moveSpaceship: aSpaceship by: aNumberOfSteps [
-
-	| currentPosition newPosition |
-	currentPosition := positions at: aSpaceship.
-	newPosition := currentPosition moveBy: aNumberOfSteps withNumberOfTiles: board numberOfTiles .
-	positions at: aSpaceship put: newPosition.
-	self checkWinner: aSpaceship
-]
-
-{ #category : 'game logic' }
-Game >> playNextTurn [
-
-	self moveCurrentPlayerByRolling: diceCup roll.
 	self advanceToNextPlayer
 ]
 
-{ #category : 'accessing' }
+{ #category : 'public api' }
 Game >> positionOf: aSpaceship [
 
-	^ (positions at: aSpaceship) tile
+	^ tracker positionOf: aSpaceship
 ]
 
-{ #category : 'game logic' }
+{ #category : 'public api' }
 Game >> ranking [
 
-	^ players sorted: [ :shipA :shipB |
-			  | posA posB |
-			  posA := positions at: shipA.
-			  posB := positions at: shipB.
-
-			  posA laps > posB laps or: [
-				  posA laps = posB laps and: [ posA tile > posB tile ] ] ]
+	^ tracker rankingOf: players
 ]
 
-{ #category : 'game logic' }
+{ #category : 'card callbacks' }
+Game >> redoLastCardBy: aSpaceship target: aTarget [
+
+	| replay |
+	history hasResolvedCard ifFalse: [ ^ self ].
+	replay := history lastResolvedCard copy.
+	replay playOn: self by: aSpaceship target: aTarget
+]
+
+{ #category : 'card callbacks' }
+Game >> repeatLastBoardEffectOn: aTargetSpaceship [
+
+	history hasBoardEffect ifFalse: [ ^ self ].
+	history lastBoardEffect applyOn: self for: aTargetSpaceship
+]
+
+{ #category : 'effect callbacks' }
 Game >> sendAllSpaceshipsToFirstTile [
 
-	players do: [ :each |
-		positions at: each put: (positions at: each) resetToFirstTile ]
+	tracker sendAllToFirstTile
 ]
 
-{ #category : 'accessing' }
+{ #category : 'public api' }
 Game >> winner [
 
-	^ winner
+	^ tracker winner
 ]

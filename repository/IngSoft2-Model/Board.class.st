@@ -13,25 +13,21 @@ Board class >> withTiles: aTileCollection [
 
 	aTileCollection isEmpty ifTrue: [
 		Error signal: 'A Board must have at least one tile.' ].
-	(aTileCollection allSatisfy: [ :each | each isKindOf: Tile ]) ifFalse: [
-		Error signal: 'All elements of a Board must be tiles.' ].
+	(aTileCollection allSatisfy: [ :each | each class == Tile ])
+		ifFalse: [ Error signal: 'All elements of a Board must be tiles.' ].
 	^ self new initializeWithTiles: aTileCollection
-
 ]
 
-{ #category : 'instance creation' }
-Board >> applyEffectFor: aSpaceship on: aGame [
+{ #category : 'accessing' }
+Board >> effectAt: aTileIndex [
 
-	| position tile |
-	position := aGame positionOf: aSpaceship.
-	tile := tiles at: position.
-	tile applyOn: aGame
+	^ (tiles at: aTileIndex) effect
 ]
 
 { #category : 'initialization' }
 Board >> initializeWithTiles: aTileCollection [
 
-	tiles := aTileCollection
+	tiles := aTileCollection asOrderedCollection copy
 ]
 
 { #category : 'accessing' }
@@ -44,4 +40,10 @@ Board >> numberOfTiles [
 Board >> tileAt: aTileIndex [
 
 	^ tiles at: aTileIndex
+]
+
+{ #category : 'accessing' }
+Board >> tileFor: aPosition [
+
+	^ tiles at: aPosition
 ]

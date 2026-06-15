@@ -10,7 +10,6 @@ DiceTest >> test001WhenTheDiceIsRolledANumberIsReturned [
 
 	| aDice |
 	aDice := Dice withFaces: 6.
-
 	self assert: aDice roll isNumber
 ]
 
@@ -19,7 +18,6 @@ DiceTest >> test002WhenTheDiceIsRolledAPositiveNumberIsReturned [
 
 	| aDice |
 	aDice := Dice withFaces: 6.
-
 	self assert: aDice roll strictlyPositive
 ]
 
@@ -28,7 +26,6 @@ DiceTest >> test003WhenADiceWith6FacesIsRolledThenTheResultIsBetweenOneAndSix [
 
 	| aDice |
 	aDice := Dice withFaces: 6.
-
 	self assert: (aDice roll between: 1 and: 6)
 ]
 

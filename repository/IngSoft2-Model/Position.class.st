@@ -12,26 +12,35 @@ Class {
 { #category : 'instance creation' }
 Position class >> at: aStartingPosition withLaps: aNumberOfLaps [
 
-	(aStartingPosition < 1) ifTrue: [ Error signal: 'Starting position cannot be less than one.' ].
-	(aNumberOfLaps < 1) ifTrue: [ Error signal: 'Number of Laps cannot be less than one.'].
-
-	^(self new) initializeAt: aStartingPosition withLaps: aNumberOfLaps 
+	aStartingPosition < 1 ifTrue: [
+		Error signal: 'Starting position cannot be less than one.' ].
+	aNumberOfLaps < 1 ifTrue: [
+		Error signal: 'Number of Laps cannot be less than one.' ].
+	^ self new initializeAt: aStartingPosition withLaps: aNumberOfLaps
 ]
 
 { #category : 'initialization' }
 Position >> initializeAt: startingPosition withLaps: laps [
 
 	position := startingPosition.
-	lap := laps.
+	lap := laps
 ]
 
-{ #category : 'game logic' }
+{ #category : 'comparing' }
+Position >> isAheadOf: anotherPosition [
+
+	lap > anotherPosition laps ifTrue: [ ^ true ].
+	lap < anotherPosition laps ifTrue: [ ^ false ].
+	^ position > anotherPosition tileIndex
+]
+
+{ #category : 'accessing' }
 Position >> laps [
 
 	^ lap
 ]
 
-{ #category : 'game logic' }
+{ #category : 'moving' }
 Position >> moveBy: aNumberOfSteps withNumberOfTiles: aNumberOfTiles [
 
 	| indexedTile newLaps newTile |
@@ -44,13 +53,14 @@ Position >> moveBy: aNumberOfSteps withNumberOfTiles: aNumberOfTiles [
 	^ self class at: newTile withLaps: newLaps
 ]
 
-{ #category : 'initialization' }
+{ #category : 'moving' }
 Position >> resetToFirstTile [
-    ^ self class at: 1 withLaps: lap
+
+	^ self class at: 1 withLaps: lap
 ]
 
-{ #category : 'game logic' }
-Position >> tile [
+{ #category : 'accessing' }
+Position >> tileIndex [
 
 	^ position
 ]
