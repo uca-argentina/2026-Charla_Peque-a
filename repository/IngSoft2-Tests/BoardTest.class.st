@@ -18,27 +18,24 @@ BoardTest >> test001ABoardCannotBeCreatedWithAnEmptyTileCollection [
 		should: [ Board withTiles: #(  ) ]
 		raise: Error
 		withExceptionDo: [ :error |
-			self
-				assert: error messageText
-				equals: 'A Board must have at least one tile.' ]
+				self
+					assert: error messageText
+					equals: 'A Board must have at least one tile.' ]
 ]
 
 { #category : 'tests - instance creation' }
 BoardTest >> test002ABoardCannotBeCreatedWithElementsThatAreNotTiles [
 
-	"A board accepts anything that understands the tile protocol (applyOn:for:).
-	 A bare string does not, so the board rejects it."
-
 	self
 		should: [
-			Board withTiles: {
-					(Tile with: NoEffect new).
-					'not a tile' } ]
+				Board withTiles: {
+						(Tile with: NoEffect new).
+						'not a tile' } ]
 		raise: Error
 		withExceptionDo: [ :error |
-			self
-				assert: error messageText
-				equals: 'All elements of a Board must be tiles.' ]
+				self
+					assert: error messageText
+					equals: 'All elements of a Board must be tiles.' ]
 ]
 
 { #category : 'tests - instance creation' }

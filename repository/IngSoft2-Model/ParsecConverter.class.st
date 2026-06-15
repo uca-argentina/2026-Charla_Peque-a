@@ -31,8 +31,5 @@ ParsecConverter >> initializeWithTotalParsecs: aTotalParsecs numberOfTiles: aNum
 { #category : 'converting' }
 ParsecConverter >> tilesForParsecs: aParsecs [
 
-	"Each tile represents an equal share of the total parsecs of the board.
-	 The result is truncated: a jump shorter than one full tile moves zero tiles."
-
 	^ (aParsecs * numberOfTiles / totalParsecs) truncated
 ]

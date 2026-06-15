@@ -29,12 +29,9 @@ Position >> initializeAt: startingPosition withLaps: laps [
 { #category : 'comparing' }
 Position >> isAheadOf: anotherPosition [
 
-	"A position is ahead of another if it has completed more laps,
-	 or the same laps but is standing on a further tile."
-
 	lap > anotherPosition laps ifTrue: [ ^ true ].
 	lap < anotherPosition laps ifTrue: [ ^ false ].
-	^ position > anotherPosition tile
+	^ position > anotherPosition tileIndex
 ]
 
 { #category : 'accessing' }
@@ -51,8 +48,6 @@ Position >> moveBy: aNumberOfSteps withNumberOfTiles: aNumberOfTiles [
 	newLaps := lap + (indexedTile // aNumberOfTiles).
 	newTile := indexedTile \\ aNumberOfTiles + 1.
 
-	"Domain rule: a ship can never go back before the starting line.
-	 Any backward move that would land before lap 1, tile 1 is clamped to the start."
 	newLaps < 1 ifTrue: [ ^ self class at: 1 withLaps: 1 ].
 
 	^ self class at: newTile withLaps: newLaps
@@ -61,13 +56,11 @@ Position >> moveBy: aNumberOfSteps withNumberOfTiles: aNumberOfTiles [
 { #category : 'moving' }
 Position >> resetToFirstTile [
 
-	"Keeps the lap count, returns to the first tile (used by AtomicBomb)."
-
 	^ self class at: 1 withLaps: lap
 ]
 
 { #category : 'accessing' }
-Position >> tile [
+Position >> tileIndex [
 
 	^ position
 ]

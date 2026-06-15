@@ -27,7 +27,7 @@ Distance class >> parsecs: aNumberOfParsecs [
 { #category : 'comparing' }
 Distance >> = anotherDistance [
 
-	^ (anotherDistance isKindOf: Distance) and: [
+	^ anotherDistance class == self class and: [
 		  parsecs = anotherDistance inParsecs ]
 ]
 

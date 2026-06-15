@@ -20,9 +20,6 @@ SequenceDeck class >> withCards: aCardCollection [
 { #category : 'drawing' }
 SequenceDeck >> draw [
 
-	"Deterministic deck for testing. Cycles through a fixed sequence of cards,
-	 returning a fresh copy each time so callers get independent instances."
-
 	| card |
 	card := cards at: currentIndex.
 	currentIndex := currentIndex \\ cards size + 1.

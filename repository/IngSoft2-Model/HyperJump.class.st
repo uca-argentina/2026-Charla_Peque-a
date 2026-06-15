@@ -16,18 +16,19 @@ HyperJump class >> withDistances: aDistanceList converter: aConverter [
 	aDistanceList isEmpty ifTrue: [
 		Error signal: 'HyperJump must have at least one parsec value.' ].
 	aConverter ifNil: [ Error signal: 'HyperJump must have a converter.' ].
-	^ self new initializeWithDistances: aDistanceList converter: aConverter
+	^ self new
+		  initializeWithDistances: aDistanceList
+		  converter: aConverter
 ]
 
 { #category : 'instance creation' }
 HyperJump class >> withParsecs: aParsecsList converter: aConverter [
 
-	"Convenience: accepts raw numbers as parsec values."
-
 	| asDistances |
 	aParsecsList isEmpty ifTrue: [
 		Error signal: 'HyperJump must have at least one parsec value.' ].
-	asDistances := aParsecsList collect: [ :each | Distance parsecs: each ].
+	asDistances := aParsecsList collect: [ :each |
+		               Distance parsecs: each ].
 	^ self withDistances: asDistances converter: aConverter
 ]
 

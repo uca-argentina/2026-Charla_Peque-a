@@ -14,8 +14,5 @@ PermanentCard >> isPermanent [
 { #category : 'playing' }
 PermanentCard >> playOn: aGame by: aSpaceship target: aTargetSpaceship [
 
-	"A permanent card registers itself as active in the game.
-	 Its effect on rolls is applied later through modifierFor:."
-
 	aGame activatePermanent: self
 ]

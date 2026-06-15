@@ -18,7 +18,8 @@ Tile class >> with: anEffect [
 { #category : 'applying' }
 Tile >> applyOn: aGame for: aSpaceship [
 
-	effect applyOn: aGame for: aSpaceship
+	effect applyOn: aGame for: aSpaceship.
+	^ effect
 ]
 
 { #category : 'accessing' }

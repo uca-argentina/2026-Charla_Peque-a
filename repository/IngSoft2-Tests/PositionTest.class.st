@@ -10,7 +10,7 @@ PositionTest >> test001WhenCreatingAPositionWithValidParametersThenItIsCreated [
 
 	| position |
 	position := Position at: 5 withLaps: 2.
-	self assert: position tile equals: 5.
+	self assert: position tileIndex equals: 5.
 	self assert: position laps equals: 2
 ]
 
@@ -21,9 +21,9 @@ PositionTest >> test002WhenCreatingAPositionWithTileLessThanOneThenItCannotBeCre
 		should: [ Position at: 0 withLaps: 1 ]
 		raise: Error
 		withExceptionDo: [ :error |
-			self
-				assert: error messageText
-				equals: 'Starting position cannot be less than one.' ]
+				self
+					assert: error messageText
+					equals: 'Starting position cannot be less than one.' ]
 ]
 
 { #category : 'tests - instance creation' }
@@ -33,9 +33,9 @@ PositionTest >> test003WhenCreatingAPositionWithLapsLessThanOneThenItCannotBeCre
 		should: [ Position at: 1 withLaps: 0 ]
 		raise: Error
 		withExceptionDo: [ :error |
-			self
-				assert: error messageText
-				equals: 'Number of Laps cannot be less than one.' ]
+				self
+					assert: error messageText
+					equals: 'Number of Laps cannot be less than one.' ]
 ]
 
 { #category : 'tests - moving forward' }
@@ -44,7 +44,7 @@ PositionTest >> test004WhenAPositionMovesForwardWithinTheSameLapThenItAdvancesCo
 	| position newPosition |
 	position := Position at: 3 withLaps: 1.
 	newPosition := position moveBy: 4 withNumberOfTiles: 10.
-	self assert: newPosition tile equals: 7.
+	self assert: newPosition tileIndex equals: 7.
 	self assert: newPosition laps equals: 1
 ]
 
@@ -54,7 +54,7 @@ PositionTest >> test005WhenAPositionMovesForwardToExactlyTheLastTileThenItStaysI
 	| position newPosition |
 	position := Position at: 5 withLaps: 1.
 	newPosition := position moveBy: 5 withNumberOfTiles: 10.
-	self assert: newPosition tile equals: 10.
+	self assert: newPosition tileIndex equals: 10.
 	self assert: newPosition laps equals: 1
 ]
 
@@ -64,7 +64,7 @@ PositionTest >> test006WhenAPositionMovesForwardBeyondTheLastTileThenItWrapsArou
 	| position newPosition |
 	position := Position at: 8 withLaps: 1.
 	newPosition := position moveBy: 5 withNumberOfTiles: 10.
-	self assert: newPosition tile equals: 3.
+	self assert: newPosition tileIndex equals: 3.
 	self assert: newPosition laps equals: 2
 ]
 
@@ -74,7 +74,7 @@ PositionTest >> test007WhenAPositionMovesForwardExactlyOneLapThenItReturnsToFirs
 	| position newPosition |
 	position := Position at: 1 withLaps: 1.
 	newPosition := position moveBy: 5 withNumberOfTiles: 5.
-	self assert: newPosition tile equals: 1.
+	self assert: newPosition tileIndex equals: 1.
 	self assert: newPosition laps equals: 2
 ]
 
@@ -84,7 +84,7 @@ PositionTest >> test008WhenAPositionMovesForwardMultipleLapsThenItIncrementsLapC
 	| position newPosition |
 	position := Position at: 3 withLaps: 1.
 	newPosition := position moveBy: 12 withNumberOfTiles: 5.
-	self assert: newPosition tile equals: 5.
+	self assert: newPosition tileIndex equals: 5.
 	self assert: newPosition laps equals: 3
 ]
 
@@ -94,7 +94,7 @@ PositionTest >> test009WhenAPositionMovesBackwardWithinTheSameLapThenItRetreatsC
 	| position newPosition |
 	position := Position at: 7 withLaps: 2.
 	newPosition := position moveBy: -3 withNumberOfTiles: 10.
-	self assert: newPosition tile equals: 4.
+	self assert: newPosition tileIndex equals: 4.
 	self assert: newPosition laps equals: 2
 ]
 
@@ -104,7 +104,7 @@ PositionTest >> test010WhenAPositionMovesBackwardToExactlyTheFirstTileThenItStay
 	| position newPosition |
 	position := Position at: 5 withLaps: 2.
 	newPosition := position moveBy: -4 withNumberOfTiles: 10.
-	self assert: newPosition tile equals: 1.
+	self assert: newPosition tileIndex equals: 1.
 	self assert: newPosition laps equals: 2
 ]
 
@@ -114,7 +114,7 @@ PositionTest >> test011WhenAPositionMovesBackwardBeyondTheFirstTileThenItWrapsAr
 	| position newPosition |
 	position := Position at: 3 withLaps: 2.
 	newPosition := position moveBy: -5 withNumberOfTiles: 10.
-	self assert: newPosition tile equals: 8.
+	self assert: newPosition tileIndex equals: 8.
 	self assert: newPosition laps equals: 1
 ]
 
@@ -124,7 +124,7 @@ PositionTest >> test012WhenAPositionMovesBackwardExactlyOneLapThenItGoesToLastTi
 	| position newPosition |
 	position := Position at: 1 withLaps: 3.
 	newPosition := position moveBy: -5 withNumberOfTiles: 5.
-	self assert: newPosition tile equals: 1.
+	self assert: newPosition tileIndex equals: 1.
 	self assert: newPosition laps equals: 2
 ]
 
@@ -134,7 +134,7 @@ PositionTest >> test013WhenAPositionMovesBackwardMultipleLapsThenItDecrementsLap
 	| position newPosition |
 	position := Position at: 2 withLaps: 5.
 	newPosition := position moveBy: -12 withNumberOfTiles: 5.
-	self assert: newPosition tile equals: 5.
+	self assert: newPosition tileIndex equals: 5.
 	self assert: newPosition laps equals: 2
 ]
 
@@ -144,7 +144,7 @@ PositionTest >> test014WhenAPositionMovesBackwardBeforeTheStartThenItClampsToFir
 	| position newPosition |
 	position := Position at: 3 withLaps: 1.
 	newPosition := position moveBy: -10 withNumberOfTiles: 10.
-	self assert: newPosition tile equals: 1.
+	self assert: newPosition tileIndex equals: 1.
 	self assert: newPosition laps equals: 1
 ]
 
@@ -154,7 +154,7 @@ PositionTest >> test015WhenAPositionMovesBackwardManyLapsBeforeTheStartThenItCla
 	| position newPosition |
 	position := Position at: 2 withLaps: 2.
 	newPosition := position moveBy: -50 withNumberOfTiles: 5.
-	self assert: newPosition tile equals: 1.
+	self assert: newPosition tileIndex equals: 1.
 	self assert: newPosition laps equals: 1
 ]
 

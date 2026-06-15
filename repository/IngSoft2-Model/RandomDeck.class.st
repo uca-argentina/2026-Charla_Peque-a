@@ -2,7 +2,7 @@ Class {
 	#name : 'RandomDeck',
 	#superclass : 'Deck',
 	#instVars : [
-		'cardClasses',
+		'cardPrototypes',
 		'randomSource'
 	],
 	#category : 'IngSoft2-Model',
@@ -12,28 +12,34 @@ Class {
 { #category : 'instance creation' }
 RandomDeck class >> new [
 
-	^ self withRandomSource: (RandomNumberSource new)
+	^ self withRandomSource: RandomNumberSource new
 ]
 
 { #category : 'instance creation' }
 RandomDeck class >> withRandomSource: aRandomSource [
 
+	aRandomSource ifNil: [
+		Error signal: 'A random deck must have a source.' ].
 	^ self basicNew initializeWithRandomSource: aRandomSource
 ]
 
 { #category : 'drawing' }
 RandomDeck >> draw [
 
-	"Infinite deck: draws one of the six card types with uniform probability."
-
 	| index |
-	index := randomSource nextInt: cardClasses size.
-	^ (cardClasses at: index) new
+	index := randomSource nextInt: cardPrototypes size.
+	^ (cardPrototypes at: index) new
 ]
 
 { #category : 'initialization' }
 RandomDeck >> initializeWithRandomSource: aRandomSource [
 
-	cardClasses := { Overload. Speed. Acceleration. Cancellation. Redo. Repeat }.
+	cardPrototypes := {
+		                  Overload.
+		                  Speed.
+		                  Acceleration.
+		                  Cancellation.
+		                  Redo.
+		                  Repeat }.
 	randomSource := aRandomSource
 ]

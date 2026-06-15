@@ -27,9 +27,6 @@ SequencedRandomSource >> initializeWithValues: aCollection [
 { #category : 'generating' }
 SequencedRandomSource >> nextInt: aMaximum [
 
-	"Returns the next forced value, ignoring aMaximum. Cycles through the sequence.
-	 Lets tests drive BoardFactory and RandomDeck deterministically."
-
 	| value |
 	value := values at: currentIndex.
 	currentIndex := currentIndex \\ values size + 1.

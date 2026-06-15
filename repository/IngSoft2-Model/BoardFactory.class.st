@@ -3,30 +3,28 @@ Class {
 	#superclass : 'Object',
 	#instVars : [
 		'numberOfTiles',
-		'totalParsecs',
-		'moonWalkMin',
-		'moonWalkMax',
-		'hyperJumpParsecs',
-		'randomSource'
+		'distribution'
 	],
 	#category : 'IngSoft2-Model',
 	#package : 'IngSoft2-Model'
 }
 
 { #category : 'instance creation' }
-BoardFactory class >> withTiles: aNumberOfTiles totalParsecs: aTotalParsecs moonWalkRange: mwRange hyperJumpParsecs: aHyperJumpCollection [
+BoardFactory class >> withTiles: aNumberOfTiles distribution: aDistribution [
 
-	^ self
-		  withTiles: aNumberOfTiles
-		  totalParsecs: aTotalParsecs
-		  moonWalkRange: mwRange
-		  hyperJumpParsecs: aHyperJumpCollection
-		  randomSource: RandomNumberSource new
+	aNumberOfTiles < 1 ifTrue: [
+		Error signal: 'A board must have at least one tile.' ].
+	aDistribution ifNil: [
+		Error signal: 'A board factory must have an effect distribution.' ].
+	^ self new
+		  initializeWithTiles: aNumberOfTiles
+		  distribution: aDistribution
 ]
 
 { #category : 'instance creation' }
-BoardFactory class >> withTiles: aNumberOfTiles totalParsecs: aTotalParsecs moonWalkRange: mwRange hyperJumpParsecs: aHyperJumpCollection randomSource: aRandomSource [
+BoardFactory class >> withTiles: aNumberOfTiles totalParsecs: aTotalParsecs moonWalkRange: mwRange hyperJumpParsecs: aHyperJumpCollection [
 
+	| converter standardDistribution |
 	aNumberOfTiles < 1 ifTrue: [
 		Error signal: 'A board must have at least one tile.' ].
 	aTotalParsecs <= 0 ifTrue: [
@@ -39,63 +37,35 @@ BoardFactory class >> withTiles: aNumberOfTiles totalParsecs: aTotalParsecs moon
 		Error signal: 'MoonWalk max must be greater than or equal to min.' ].
 	aHyperJumpCollection isEmpty ifTrue: [
 		Error signal: 'HyperJump parsecs list cannot be empty.' ].
-	^ self new
-		  initializeWithTiles: aNumberOfTiles
-		  totalParsecs: aTotalParsecs
-		  moonWalkRange: mwRange
-		  hyperJumpParsecs: aHyperJumpCollection
-		  randomSource: aRandomSource
+	converter := ParsecConverter
+		             withTotalParsecs: aTotalParsecs
+		             numberOfTiles: aNumberOfTiles.
+	standardDistribution := EffectDistribution
+		                        standardWithConverter: converter
+		                        moonWalkRange: mwRange
+		                        hyperJumpParsecs: aHyperJumpCollection
+		                        source: RandomNumberSource new.
+	^ self withTiles: aNumberOfTiles distribution: standardDistribution
 ]
 
 { #category : 'building' }
 BoardFactory >> build [
 
-	| tiles converter |
-	converter := ParsecConverter
-		             withTotalParsecs: totalParsecs
-		             numberOfTiles: numberOfTiles.
-
-	tiles := (1 to: numberOfTiles) collect: [ :i |
-		         Tile with: (self randomEffectWithConverter: converter) ].
-
+	| tiles |
+	tiles := (1 to: numberOfTiles) collect: [ :each |
+		         Tile with: distribution buildEffect ].
 	^ Board withTiles: tiles
 ]
 
+{ #category : 'accessing' }
+BoardFactory >> distribution [
+
+	^ distribution
+]
+
 { #category : 'initialization' }
-BoardFactory >> initializeWithTiles: aNumberOfTiles totalParsecs: aTotalParsecs moonWalkRange: mwRange hyperJumpParsecs: aHyperJumpCollection randomSource: aRandomSource [
+BoardFactory >> initializeWithTiles: aNumberOfTiles distribution: aDistribution [
 
 	numberOfTiles := aNumberOfTiles.
-	totalParsecs := aTotalParsecs.
-	moonWalkMin := mwRange first.
-	moonWalkMax := mwRange last.
-	hyperJumpParsecs := aHyperJumpCollection.
-	randomSource := aRandomSource
-]
-
-{ #category : 'private' }
-BoardFactory >> randomEffectWithConverter: converter [
-
-	"Distribution (entrega 3):
-	 NoEffect 30%, WormHole 20%, SpeedUp 20%, MoonWalk 10%,
-	 HyperJump 8%, AtomicBomb 2%, GiveCard 10%."
-
-	| roll |
-	roll := randomSource nextInt: 100.
-
-	roll <= 30 ifTrue: [ ^ NoEffect new ].
-	roll <= 50 ifTrue: [ ^ WormHole new ].
-	roll <= 70 ifTrue: [ ^ SpeedUp new ].
-	roll <= 80 ifTrue: [ ^ MoonWalk withTilesBack: self randomMoonWalkValue ].
-	roll <= 88 ifTrue: [ ^ HyperJump withParsecs: hyperJumpParsecs converter: converter ].
-	roll <= 90 ifTrue: [ ^ AtomicBomb new ].
-	^ GiveCard new
-]
-
-{ #category : 'private' }
-BoardFactory >> randomMoonWalkValue [
-
-	| span offset |
-	span := moonWalkMax - moonWalkMin + 1.
-	offset := randomSource nextInt: span.
-	^ moonWalkMin + offset - 1
+	distribution := aDistribution
 ]

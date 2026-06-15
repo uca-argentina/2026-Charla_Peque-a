@@ -14,7 +14,5 @@ Effect >> applyOn: aGame for: aSpaceship [
 { #category : 'testing' }
 Effect >> isRepeatable [
 
-	"Whether a Repeat card can replay this effect. Most effects can; NoEffect cannot."
-
 	^ true
 ]

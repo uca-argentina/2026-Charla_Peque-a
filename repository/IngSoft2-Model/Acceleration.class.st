@@ -8,7 +8,5 @@ Class {
 { #category : 'effect modifier' }
 Acceleration >> modifierFor: aSpaceship [
 
-	"Acceleration affects every ship's total roll."
-
 	^ 1
 ]
